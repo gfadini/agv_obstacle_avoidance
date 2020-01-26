@@ -13,9 +13,9 @@ import subprocess
 import random
 import sys
 import os
+import matplotlib.pyplot as plt
 if os.name == 'nt':
     plt.rcParams['animation.ffmpeg_path'] ='C:\\ffmpeg\\bin\\ffmpeg.exe'
-import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter
 from wall import wall, Map
 from lidar import lidar
