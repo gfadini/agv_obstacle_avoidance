@@ -16,7 +16,6 @@ import os
 import matplotlib.pyplot as plt
 if os.name == 'nt':
     plt.rcParams['animation.ffmpeg_path'] ='C:\\ffmpeg\\bin\\ffmpeg.exe'
-
 from matplotlib.animation import FFMpegWriter
 from wall import wall, Map
 from lidar import lidar
@@ -107,6 +106,5 @@ with writer.saving(plt.figure('Simulation'), video_name, writer_dpi):
 '''
 plot_kalman_error(swarm)
 plot_MHE_error(swarm)
-
 plot_filteredtrajectory(swarm)
 plot_filteredtrajectory1(swarm)
