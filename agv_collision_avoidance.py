@@ -108,23 +108,3 @@ plot_kalman_error(swarm)
 plot_MHE_error(swarm)
 plot_filteredtrajectory(swarm)
 plot_filteredtrajectory1(swarm)
-
-plt.figure('Test')
-for robot in swarm.robots:
-
-    _xytMHE = np.array( robot.MHE.hist.xk )
-    _xMHE = _xytMHE[0::3]
-    _yMHE = _xytMHE[1::3]
-    plt.plot( _xMHE, _yMHE , "-." , color = robot.color)
-    _xytKAL = np.array( robot.kalman.hist.xk )
-    _xKAL = _xytKAL[0::3]
-    _yKAL = _xytKAL[1::3]
-    #plt.plot( _xKAL, _yKAL , "--" , color = robot.color)
-    _xGT  = robot.history.x
-    _yGT  = robot.history.y
-
-    plt.plot( _xGT, _yGT,'-',color = robot.color) 
-
-    plt.ylabel('y')
-    plt.xlabel('y')
-    plt.show()

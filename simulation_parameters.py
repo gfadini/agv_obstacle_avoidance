@@ -3,7 +3,7 @@
     This script stores the parameters needed for the simulation
 '''
 import math
-import time as tim 
+import time as tim
 '''
     Probabilistic roadmap 
 '''
