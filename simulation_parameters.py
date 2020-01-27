@@ -15,7 +15,7 @@ MAX_EDGE_LEN = 10.0  # [m] Maximum edge length
     Simulation properties
 '''
 T = 60.0  # max simulation time
-avoidance_algorithm = 'rvo'#'potential' # 'potential' or 'rvo'
+avoidance_algorithm = 'potential'#'potential' # 'potential' or 'rvo'
 dt = 0.05  # [s]
 # n_arrived = 0
 # time = 0.0
@@ -23,7 +23,7 @@ dt = 0.05  # [s]
 '''
     Robot properties
 '''
-n_robots = 3
+n_robots = 2
 robot_size = 2.0  # [m]
 reference_speed = 10.0 # [m/s]
 k = 0.1  # look forward gain
@@ -43,19 +43,18 @@ r_w = 0.15 # wheel radius
 '''
     Kalman properties
 '''
-sigmaX0 = 3
-sigmaY0 = 3
+sigmaX0 = 5
+sigmaY0 = 5
 sigmaPsi0 =  30*math.pi/180
-# sigmaRW = 0.2
-# sigmaLW = 0.2
-sigmaUWBx = 0.2
-sigmaUWBy = 0.2
+
+sigmaUWBx = 0.3
+sigmaUWBy = 0.3
 sigmaCx = 0.3
 sigmaCy = 0.3
 sigmaCyaw = math.pi/180
-sigmaGPSx = 0.2
-sigmaGPSy = 0.2
-sigmaR    = 0.1
+sigmaGPSx = 0.3
+sigmaGPSy = 0.3
+sigmaR    = 0.2
 
 kalman_mhe = True
 kalman_centralized = True

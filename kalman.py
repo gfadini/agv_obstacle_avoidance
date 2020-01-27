@@ -11,6 +11,7 @@ class kal_hist():
         self.Pk = (Pk.flatten()).tolist()
         self.Time = [0]
         self.Dxk = ((xk - real_state).flatten()).tolist()
+        self.z = []
 
 class kal():
 
@@ -71,6 +72,7 @@ class kal():
                 meas_flag = True
                 print('Distributed measuring')
         self.sensors_measuring_at_T = meas_list
+        self.z = np.array([])
         return meas_flag
 
     def observation_and_measure(self):
@@ -110,6 +112,7 @@ class kal():
         self.hist.Time.extend( [self.kalmanTime] ) 
         state = np.array([self.agent.state.x, self.agent.state.y, self.agent.state.yaw])
         self.hist.Dxk.extend( ((self.xk - state).flatten()).tolist() )
+        self.hist.z.append( (self.z).tolist() )
 
     def filter(self):
         self.control_estimation()

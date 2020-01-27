@@ -149,3 +149,65 @@ def plot_MHE_error(swarm):
         plt.ylabel('Error in position estimation')
         plt.xlabel('Time')
         plt.show()
+
+def plot_filteredtrajectory(swarm):
+
+    plt.figure('Trajectory estimation')
+    for robot in swarm.robots:
+        plt.plot(robot.history.x, robot.history.y,'-.',color = robot.color,label="trajectory", linewidth = 0.7, alpha = 0.5)
+        _xytMHE = np.array( robot.MHE.hist.xk )
+        _xMHE = _xytMHE[0::3]
+        _yMHE = _xytMHE[1::3]
+        plt.plot( _xMHE, _yMHE , "-" , color = robot.color)
+        _xytKAL = np.array( robot.kalman.hist.xk )
+        _xKAL = _xytKAL[0::3]
+        _yKAL = _xytKAL[1::3]
+        plt.plot( _xKAL, _yKAL , "--" , color = robot.color)
+
+
+        plt.ylabel('y')
+        plt.xlabel('y')
+        plt.show()
+
+def plot_filteredtrajectory1(swarm):
+    for robot in swarm.robots:
+        plt.figure('Trajectory estimation subplots' +  str(robot.indexSwarm))
+        _xytMHE = np.array( robot.MHE.hist.xk )
+        _xMHE = _xytMHE[0::3]
+        _yMHE = _xytMHE[1::3]
+        _thMHE= _xytMHE[2::3]
+        tMHE  = robot.MHE.hist.Time
+        _xytKAL = np.array( robot.kalman.hist.xk )
+        _xKAL = _xytKAL[0::3]
+        _yKAL = _xytKAL[1::3]
+        _thKAL= _xytKAL[2::3]
+        tKAL  = robot.kalman.hist.Time
+        _xGT  = robot.history.x
+        _yGT  = robot.history.y
+        _thGT = robot.history.yaw
+        tGT   = robot.kalman.hist.Time
+        _xytz = np.array( robot.kalman.hist.xk )
+        _xz   = _xytz[0::3]
+        _yz   = _xytz[1::3]
+        _thz  = _xytz[2::3]
+        tz    = np.arange(len(_xz)) * 1/robot.kalman.Camera.rate # np.arange(robot.kalman.hist.Time[-1],1/robot.kalman.Camera.rate)
+
+        plt.subplot(3, 1, 1)
+        plt.plot( tGT, _xGT,'-',color = robot.color) 
+        plt.plot( tMHE, _xMHE,'-.',color = robot.color) 
+        plt.plot( tKAL, _xKAL,'--',color = robot.color) 
+        plt.plot( tz, _xz,'.',color = robot.color) 
+
+        plt.subplot(3, 1, 2)
+        plt.plot( tGT, _yGT,'-',color = robot.color) 
+        plt.plot( tMHE, _yMHE,'-.',color = robot.color) 
+        plt.plot( tKAL, _yKAL,'--',color = robot.color) 
+        plt.plot( tz, _yz,'.',color = robot.color) 
+        
+        plt.subplot(3, 1, 3)
+        plt.plot( tGT, _thGT,'-',color = robot.color) 
+        plt.plot( tMHE, _thMHE,'-.',color = robot.color) 
+        plt.plot( tKAL, _thKAL,'--',color = robot.color) 
+        plt.plot( tz, _thz,'.',color = robot.color) 
+        
+        plt.show()

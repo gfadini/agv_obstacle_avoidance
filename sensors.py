@@ -16,7 +16,7 @@ class Enc():
         self.H = np.array([[0,0,0],[0,0,0]])
 
     def measure(self, agent):
-        error = np.round( np.random.rand(2) * 3 ) * self.Quanta
+        error = np.round( (np.random.rand(2) - 0.5) * 3 ) * self.Quanta
         self.delta_theta_dt = np.floor((dt*agent.state.u)/(self.Quanta))*self.Quanta + error
         self.theta = self.theta + self.delta_theta_dt
         return self.delta_theta_dt
@@ -39,7 +39,7 @@ class UWB():
 
 class Camera():
     def __init__(self):
-        self.rate = 5
+        self.rate = 1
         self.H = np.diag([1,1,1]) 
         self.R = np.diag([sigmaCx**2,sigmaCy**2,sigmaCyaw**2])
     def measure(self,state):
