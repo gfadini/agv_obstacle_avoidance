@@ -106,5 +106,5 @@ with writer.saving(plt.figure('Simulation'), video_name, writer_dpi):
 '''
 plot_kalman_error(swarm)
 plot_MHE_error(swarm)
-plot_filteredtrajectory(swarm)
-plot_filteredtrajectory1(swarm)
+plot_filtered_trajectory(swarm)
+plot_filtered_state(swarm)

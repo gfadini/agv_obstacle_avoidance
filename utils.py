@@ -150,7 +150,7 @@ def plot_MHE_error(swarm):
         plt.xlabel('Time')
         plt.show()
 
-def plot_filteredtrajectory(swarm):
+def plot_filtered_trajectory(swarm):
 
     plt.figure('Trajectory estimation')
     for robot in swarm.robots:
@@ -170,7 +170,7 @@ def plot_filteredtrajectory(swarm):
         plt.ylabel('y')
         plt.show()
 
-def plot_filteredtrajectory1(swarm):
+def plot_filtered_state(swarm):
     for robot in swarm.robots:
         plt.figure('Trajectory estimation subplots' +  str(robot.indexSwarm))
         _xytMHE = np.array( robot.MHE.hist.xk )
@@ -197,15 +197,19 @@ def plot_filteredtrajectory1(swarm):
         plt.plot( tGT, _xGT,'-',color = robot.color)
         plt.plot( tMHE, _xMHE,'-.',color = robot.color)
         plt.plot( tKAL, _xKAL,'--',color = robot.color)
+        plt.ylabel('x [m]')
 
         plt.subplot(3, 1, 2)
         plt.plot( tGT, _yGT,'-',color = robot.color)
         plt.plot( tMHE, _yMHE,'-.',color = robot.color)
         plt.plot( tKAL, _yKAL,'--',color = robot.color)
+        plt.ylabel('y [m]')
 
         plt.subplot(3, 1, 3)
         plt.plot( tGT, _thGT,'-',color = robot.color)
         plt.plot( tMHE, _thMHE,'-.',color = robot.color)
         plt.plot( tKAL, _thKAL,'--',color = robot.color)
+        plt.ylabel('$\\theta$ [rad]')
+        plt.xlabel('Time [s]')
         
         plt.show()
