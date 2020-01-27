@@ -196,18 +196,18 @@ def plot_filteredtrajectory1(swarm):
         plt.plot( tGT, _xGT,'-',color = robot.color) 
         plt.plot( tMHE, _xMHE,'-.',color = robot.color) 
         plt.plot( tKAL, _xKAL,'--',color = robot.color) 
-        plt.plot( tz, _xz,'.',color = robot.color) 
+        # plt.plot( tz, _xz,'.',color = robot.color) 
 
         plt.subplot(3, 1, 2)
         plt.plot( tGT, _yGT,'-',color = robot.color) 
         plt.plot( tMHE, _yMHE,'-.',color = robot.color) 
         plt.plot( tKAL, _yKAL,'--',color = robot.color) 
-        plt.plot( tz, _yz,'.',color = robot.color) 
+        # plt.plot( tz, _yz,'.',color = robot.color) 
         
         plt.subplot(3, 1, 3)
         plt.plot( tGT, _thGT,'-',color = robot.color) 
         plt.plot( tMHE, _thMHE,'-.',color = robot.color) 
         plt.plot( tKAL, _thKAL,'--',color = robot.color) 
-        plt.plot( tz, _thz,'.',color = robot.color) 
+        # plt.plot( tz, _thz,'.',color = robot.color) 
         
         plt.show()
