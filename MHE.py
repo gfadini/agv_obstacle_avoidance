@@ -78,7 +78,7 @@ class MHE():
         self.ubg = []
 
         # Define Horizon
-        self.Horizon = 20 # measures
+        self.Horizon = 10 # measures
         self.enoughMeasure = False
         self.initial_guess = self.xkest * (self.Horizon+1) + [0,0] * self.Horizon
         self.state_guess = self.xkest * (self.Horizon+1)

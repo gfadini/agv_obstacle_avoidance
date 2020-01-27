@@ -3,7 +3,7 @@
     This script stores the parameters needed for the simulation
 '''
 import math
-import time
+import time as tim 
 '''
     Probabilistic roadmap 
 '''
@@ -18,7 +18,7 @@ T = 60.0  # max simulation time
 avoidance_algorithm = 'potential'#'potential' # 'potential' or 'rvo'
 dt = 0.05  # [s]
 # n_arrived = 0
-# time = 0.0
+time = 0.0
 
 '''
     Robot properties
@@ -69,6 +69,6 @@ show_graph = False
 save_video = False
 writer_dpi = 200
 writing_folder = '.'
-timestr = time.strftime("%m-%d_%H-%M")
+timestr = tim.strftime("%m-%d_%H-%M")
 video_name = writing_folder + '/simulation_' + str(n_robots) + '_' + avoidance_algorithm + '_' + timestr + '.mp4'
 save_images = False

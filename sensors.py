@@ -39,7 +39,7 @@ class UWB():
 
 class Camera():
     def __init__(self):
-        self.rate = 1
+        self.rate = 5
         self.H = np.diag([1,1,1]) 
         self.R = np.diag([sigmaCx**2,sigmaCy**2,sigmaCyaw**2])
     def measure(self,state):
