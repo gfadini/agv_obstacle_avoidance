@@ -48,6 +48,9 @@ plant, possible_points = Map().from_data(*poly)
 # save the map in the swarm routine
 swarm.plant = plant
 
+if kalman_centralized:
+    swarm.central_kalman = centralized_kal(swarm)
+
 '''
     PATH PLANNING
 ''' 
@@ -81,7 +84,7 @@ with writer.saving(plt.figure('Simulation'), video_name, writer_dpi):
         print_informations(time, dt, swarm, interval = dt)
 
         swarm.G.compute(swarm.robots)
-        swarm.evolve_dynamics()
+        swarm.evolve_dynamics(time)
         plt.cla()
         simulation_plot(swarm, time, plot_lidar = True, plot_path = True, plot_target = True, plot_trajectory = True)
 
@@ -107,3 +110,4 @@ plot_kalman_error(swarm)
 plot_MHE_error(swarm)
 plot_filtered_trajectory(swarm)
 plot_filtered_state(swarm)
+ConfrontKalMHE(swarm)

@@ -20,11 +20,8 @@ class MHE():
         self.Camera = Camera()
         self.MHETime = 0
         self.hist = MHE_hist()
-        self.xkest = (np.array([self.agent.state.x, 
-                               self.agent.state.y, 
-                               self.agent.state.yaw]) + ( 
-                               np.diag([sigmaX0,sigmaY0,sigmaPsi0]) @ np.random.randn(3))).tolist()
-        
+        self.xkest = self.agent.kalman.xk.tolist()
+
         # States
         self.nstates = 3
         _x = MX.sym('_x')
@@ -78,38 +75,42 @@ class MHE():
         self.ubg = []
 
         # Define Horizon
-        self.Horizon = 10 # measures
+        self.Horizon = 16 # measures
         self.enoughMeasure = False
-        self.initial_guess = self.xkest * (self.Horizon+1) + [0,0] * self.Horizon
-        self.state_guess = self.xkest * (self.Horizon+1)
-        self.control_guess = [0,0] * self.Horizon
         
-        # Define vector of control estimated mesurements
-        self.u_tilde = [] # np.array([])
+        # Define vector of control estimated measurements
+        self.u_tilde = [0,0] # np.array([])
         
-        # Define vector of position and attitude mesurements
+        # Define vector of position and attitude measurements
         self.y_tilde = [] # np.array([])
 
+        self.KalX = self.agent.kalman.xk.tolist()
+        self.KalP = ( self.agent.kalman.Pk.flatten() ).tolist()
+        self.state_guess = []
+
     def measurement_acquisition(self):
-        state = np.array([self.agent.state.x, self.agent.state.y, self.agent.state.yaw])
         if self.enoughMeasure:
             self.u_tilde = self.u_tilde[self.ncontrols:]
-            self.u_tilde.extend((self.Enc.measure(self.agent)/dt).tolist())
+            self.u_tilde.extend(( self.agent.kalman.u_est_dt/dt ).tolist())
+            self.KalX = self.KalX[self.nstates:]
+            self.KalX.extend( self.agent.kalman.xk.tolist() )
+            self.KalP = self.KalP[(self.nstates**2):]
+            self.KalP.extend( ( self.agent.kalman.Pk.flatten() ).tolist() )
             self.y_tilde = self.y_tilde[self.nstates:]
-            if (int(self.MHETime/dt) % int( (1/self.Camera.rate)/dt)) == 0 :
-                self.y_tilde.extend((self.Camera.measure(state)).tolist())
+            if self.agent.kalman.is_measuring():
+                self.y_tilde.extend(( self.agent.kalman.z ).tolist())
             else:
                 self.y_tilde.extend( [ 'nope' , 'nope', 'nope'] )
         else:
-            self.u_tilde.extend((self.Enc.measure(self.agent)/dt).tolist()) 
-            if (int(self.MHETime/dt) % int( (1/self.Camera.rate)/dt)) == 0 :
-                self.y_tilde.extend((self.Camera.measure(state)).tolist())
-                self.xkest = (self.Camera.measure(state)).tolist() # initialize the measure
-                self.state_guess = self.xkest * (self.Horizon+1)
-                self.control_guess = [0,0] * self.Horizon
+            self.u_tilde.extend(( self.agent.kalman.u_est_dt/dt ).tolist())
+            self.KalX.extend( self.agent.kalman.xk.tolist())
+            self.KalP.extend( ( self.agent.kalman.Pk.flatten() ).tolist())
+            self.state_guess =  self.KalX[:self.nstates]
+            if self.agent.kalman.is_measuring():
+                self.y_tilde.extend(( self.agent.kalman.z ).tolist())
             else:
-                self.y_tilde.extend([ 'nope' , 'nope', 'nope'])  #np.nan
-        if len(self.u_tilde) >= self.Horizon*self.ncontrols:
+                self.y_tilde.extend([ 'nope' , 'nope', 'nope'])
+        if len(self.u_tilde) >= (self.Horizon+1)*self.ncontrols:
             self.enoughMeasure = True
 
     def BuildMinimizationProblem(self):
@@ -129,7 +130,10 @@ class MHE():
         self.w += [Xk]
         self.lbw += self.nstates*[-xlim]
         self.ubw += self.nstates*[+xlim] 
-        self.w0 += self.state_guess[0:self.nstates] 
+
+        xkal = np.array(self.KalX[:self.nstates])
+        Pkal = np.linalg.inv((np.array(self.KalP[:(self.nstates**2)]).reshape((self.nstates,self.nstates))))
+        self.J += ( xkal - Xk).T @ Pkal @ (xkal - Xk)
 
         # Formulate the NLP
         for k in range(0,self.Horizon):
@@ -140,18 +144,12 @@ class MHE():
             self.ubw += self.ncontrols*[+clim]
             sIdx = k*self.ncontrols
             eIdx = sIdx + self.ncontrols
-            self.w0 += self.control_guess[sIdx:eIdx]
 
             # Add Lagrange term
             sIdx = k*self.ncontrols
             eIdx = sIdx + self.ncontrols
             u_tilde_vec = np.array( self.u_tilde[sIdx:eIdx] )
             self.J += ( u_tilde_vec - Uk).T @ self.Q @ ( u_tilde_vec - Uk)
-            if self.y_tilde[ k*self.nstates ] != 'nope' :
-                sIdx = k*self.nstates
-                eIdx = sIdx + self.nstates
-                y_tilde_vec = np.array(self.y_tilde[sIdx:eIdx])
-                self.J += ( y_tilde_vec - Xk).T @ self.R @ (y_tilde_vec - Xk)
 
             # Integrate till the end of the interval
             Fk = self.F(x0=Xk, p=Uk)
@@ -161,11 +159,12 @@ class MHE():
             Xk = MX.sym('X_' + str(k+1), self.nstates)
             self.w   += [Xk]
             self.lbw += self.nstates*[-xlim] 
-            self.ubw += self.nstates*[+xlim] 
-            # self.w0 += self.xkest
-            sIdx = (k+1)*self.nstates
-            eIdx = sIdx + self.nstates
-            self.w0 += self.state_guess[sIdx:eIdx]
+            self.ubw += self.nstates*[+xlim]
+            if self.y_tilde[ k*self.nstates ] != 'nope': 
+                sIdx = k*self.nstates
+                eIdx = sIdx + self.nstates
+                y_tilde_vec = np.array(self.y_tilde[sIdx:eIdx])
+                self.J += ( y_tilde_vec - Xk).T @ self.R @ (y_tilde_vec - Xk)
 
             # Add equality constraint
             self.g   += [Xk_end-Xk]
@@ -180,10 +179,9 @@ class MHE():
         opts["print_time"] = False
         opts["ipopt.print_level"] = 0
         solver = nlpsol('solver', 'ipopt', prob, opts)
-        # solver = nlpsol('solver', 'sqpmethod', prob)
 
         # Solve the NLP
-        sol = solver(x0=self.w0, lbx=self.lbw, ubx=self.ubw, lbg=self.lbg, ubg=self.ubg)
+        sol = solver(lbx=self.lbw, ubx=self.ubw, lbg=self.lbg, ubg=self.ubg)
         w_opt = sol['x'].full().flatten()
 
         # Plot the solution
@@ -192,20 +190,9 @@ class MHE():
         x3_opt = w_opt[2::5]
         u1_opt = w_opt[3::5]
         u2_opt = w_opt[4::5]
-        
-        for _i in range(len(x1_opt)):
-            if _i ==0:
-                self.state_guess = []
-            else:
-                self.state_guess += [x1_opt[_i], x2_opt[_i], x3_opt[_i]]   
-        self.state_guess += [x1_opt[-1], x2_opt[-1], x3_opt[-1]] 
 
-        for _i in range(len(u1_opt)):
-            if _i ==0:
-                self.control_guess = []
-            else:
-                self.control_guess += [u1_opt[_i], u2_opt[_i]] 
-        self.control_guess += [u1_opt[-1], u2_opt[-1]]
+        self.state_guess = [x1_opt[1], x2_opt[1], x3_opt[1]] 
+        
         self.xkest = [x1_opt[-1], x2_opt[-1], x3_opt[-1]]
     
     def save_hist(self):

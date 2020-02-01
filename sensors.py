@@ -10,20 +10,20 @@ class Enc():
         self.Quanta = 2* math.pi / self.Ticks
         self.theta = np.array([0,0])
         self.delta_theta_dt = np.array([0,0])
-        sigTik = 4
+        sigTik = 3
         self.Q = np.diag([(sigTik*self.Quanta/3)**2, (sigTik*self.Quanta/3)**2])
         self.R = np.array([[0,0],[0,0]])
         self.H = np.array([[0,0,0],[0,0,0]])
 
     def measure(self, agent):
-        error = np.round( (np.random.rand(2) - 0.5) * 3 ) * self.Quanta
+        error = np.round( (np.random.rand(2) - 0.5) * 2 ) * self.Quanta
         self.delta_theta_dt = np.floor((dt*agent.state.u)/(self.Quanta))*self.Quanta + error
         self.theta = self.theta + self.delta_theta_dt
         return self.delta_theta_dt
 
 class GPS():
     def __init__(self):
-        self.rate = 5
+        self.rate = 2
         self.H = np.array([[1,0,0],[0,1,0]])
         self.R = np.diag([sigmaGPSx**2,sigmaGPSy**2])
     def measure(self,state):

@@ -92,21 +92,21 @@ r_w = 0.15 # wheel radius
 '''
     Kalman properties
 '''
-sigmaX0 = 5
-sigmaY0 = 5
-sigmaPsi0 =  30*math.pi/180
+sigmaX0 = 3
+sigmaY0 = 3
+sigmaPsi0 =  20*math.pi/180
 
 sigmaUWBx = 0.3
 sigmaUWBy = 0.3
-sigmaCx = 0.3
-sigmaCy = 0.3
-sigmaCyaw = math.pi/180
+sigmaCx = 0.5
+sigmaCy = 0.5
+sigmaCyaw = 5*math.pi/180
 sigmaGPSx = 0.3
 sigmaGPSy = 0.3
 sigmaR    = 0.2
 
-kalman_mhe = False
-kalman_centralized = False
+kalman_mhe = True
+kalman_centralized = True
 
 '''
     Default values for showing the animations and saving the simulations

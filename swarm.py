@@ -31,8 +31,6 @@ class Swarm():
         self.plant = None
         self.all_arrived = False
         self.possible_collision = False
-        if kalman_centralized:
-            self.central_kalman = []
     
     def generate_graph(self):
         '''
@@ -43,7 +41,7 @@ class Swarm():
     def update_graph(self):
         self.G.compute(self.robots)
     
-    def evolve_dynamics(self):
+    def evolve_dynamics(self, time):
 
         self.possible_collision = False
 

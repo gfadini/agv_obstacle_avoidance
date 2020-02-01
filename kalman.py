@@ -33,7 +33,7 @@ class kal():
         self.H = [] # redefined later
         self.S = np.array([[0,0,0],[0,0,0],[0,0,0]])
         self.W = np.array([[0,0,0],[0,0,0],[0,0,0]])
-        self.z = np.array([0,0])
+        self.z = self.xk
         self.u_est_dt = np.array([0,0])
         self.kalmanTime = 0
         real_state = np.array([self.agent.state.x, self.agent.state.y, self.agent.state.yaw])
@@ -67,12 +67,11 @@ class kal():
         meas_list = []
         meas_flag = False
         for sensor in self.sensors:
-            if  ( int(self.kalmanTime/dt) % int( (1/sensor.rate)/dt) ) == 0 and self.kalmanTime != 0: 
+            if  ( int(self.kalmanTime/dt) % int( (1/sensor.rate)/dt) ) == 0: 
                 meas_list.append(sensor)
                 meas_flag = True
                 print('Distributed measuring')
         self.sensors_measuring_at_T = meas_list
-        self.z = np.array([])
         return meas_flag
 
     def observation_and_measure(self):
