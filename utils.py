@@ -58,6 +58,8 @@ def print_informations(time, dt, swarm, interval = 1):
                 attitude = agent.state.yaw
             print(str(BOLD + "Robot {0:}" + ENDC + " reached: [{1:^.4}, {2:^.4}] with attitude {3:^.4}°, {4:^.4}% route").format(agent.indexSwarm, agent.state.x, agent.state.y,
                 attitude*180/math.pi, float(100*agent.nearest_point_index/agent.last_index)))
+            if  (int(agent.kalman.kalmanTime/dt) % int((1/agent.kalman.sensors[-1].rate)/dt)) == 0:
+                print(str(BOLD + "Robot {0:}" + ENDC + OKGREEN + ' received new measures' + ENDC).format(agent.indexSwarm))
         if swarm.possible_collision:
             print(WARNING + 'Possible collision detected' + ENDC)
 
@@ -123,7 +125,7 @@ def plot_kalman_error(swarm):
         plt.legend()
         plt.show()
     
-    if not swarm.central_kalman is None:
+    if hasattr(swarm, 'central_kalman'):
         plt.figure('Centralized Kalman error')
         n = 3*n_robots
         for i, robot in enumerate(swarm.robots):
@@ -140,110 +142,124 @@ def plot_kalman_error(swarm):
         plt.grid(True)
         plt.legend()
         plt.show()
+    else:
+        print('No central kalman is initialized, nothing to plot')
 
 def plot_MHE_error(swarm):
-
-    plt.figure('MHE error in position estimation')
-    for robot in swarm.robots:
-        diff_xyt = np.array(robot.MHE.hist.Dxk)
-        diff_x = diff_xyt[0::3]
-        diff_y = diff_xyt[1::3]
-        dist = np.sqrt(diff_x**2 + diff_y**2)
-        plt.plot(robot.MHE.hist.Time, dist, "-" , color = robot.color, label='Position error robot'+str(robot.indexSwarm))
-        plt.ylabel('Error in position estimation')
-        plt.xlabel('Time')
-        plt.show()
+    if hasattr(swarm, 'central_kalman'):
+        plt.figure('MHE error in position estimation')
+        for robot in swarm.robots:
+            diff_xyt = np.array(robot.MHE.hist.Dxk)
+            diff_x = diff_xyt[0::3]
+            diff_y = diff_xyt[1::3]
+            dist = np.sqrt(diff_x**2 + diff_y**2)
+            plt.plot(robot.MHE.hist.Time, dist, "-" , color = robot.color, label='Position error robot'+str(robot.indexSwarm))
+            plt.ylabel('Error in position estimation')
+            plt.xlabel('Time')
+            plt.show()
+    else:
+        print('No MHE is initialized, nothing to plot')
 
 def plot_filtered_trajectory(swarm):
+    
+    if hasattr(swarm, 'central_kalman'):
+        plt.figure('Trajectory estimation')
+        for robot in swarm.robots:
+            _xytMHE = np.array(robot.MHE.hist.xk)
+            _xMHE = _xytMHE[0::3]
+            _yMHE = _xytMHE[1::3]
+            plt.plot(_xMHE, _yMHE , "-." , color = robot.color, label='MHE robot'+str(robot.indexSwarm))
+            _xytKAL = np.array(robot.kalman.hist.xk)
+            _xKAL = _xytKAL[0::3]
+            _yKAL = _xytKAL[1::3]
+            plt.plot(_xKAL, _yKAL , "--" , color = robot.color, label='Kalman robot'+str(robot.indexSwarm))
+            _xGT  = robot.history.x
+            _yGT  = robot.history.y
+            plt.plot(_xGT, _yGT,'-',color = robot.color, label='Ground truth'+str(robot.indexSwarm))
 
-    plt.figure('Trajectory estimation')
-    for robot in swarm.robots:
-        _xytMHE = np.array(robot.MHE.hist.xk)
-        _xMHE = _xytMHE[0::3]
-        _yMHE = _xytMHE[1::3]
-        plt.plot(_xMHE, _yMHE , "-." , color = robot.color, label='MHE robot'+str(robot.indexSwarm))
-        _xytKAL = np.array(robot.kalman.hist.xk)
-        _xKAL = _xytKAL[0::3]
-        _yKAL = _xytKAL[1::3]
-        plt.plot(_xKAL, _yKAL , "--" , color = robot.color, label='Kalman robot'+str(robot.indexSwarm))
-        _xGT  = robot.history.x
-        _yGT  = robot.history.y
-        plt.plot(_xGT, _yGT,'-',color = robot.color, label='Ground truth'+str(robot.indexSwarm))
-
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.grid(True)
-        plt.legend()
-        plt.show()
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.grid(True)
+            plt.legend()
+            plt.show()
+    else:
+        print('No MHE is initialized, nothing to plot')
 
 def plot_filtered_state(swarm):
-    for robot in swarm.robots:
-        _xytMHE = np.array(robot.MHE.hist.xk)
-        _xMHE = _xytMHE[0::3]
-        _yMHE = _xytMHE[1::3]
-        _thMHE= _xytMHE[2::3]
-        tMHE  = robot.MHE.hist.Time
-        _xytKAL = np.array(robot.kalman.hist.xk)
-        _xKAL = _xytKAL[0::3]
-        _yKAL = _xytKAL[1::3]
-        _thKAL= _xytKAL[2::3]
-        tKAL  = robot.kalman.hist.Time
-        _xGT  = robot.history.x
-        _yGT  = robot.history.y
-        _thGT = robot.history.yaw
-        tGT   = robot.history.time
-        _xytz = np.array(robot.kalman.hist.xk)
-        _xz   = _xytz[0::3]
-        _yz   = _xytz[1::3]
-        _thz  = _xytz[2::3]
-        tz    = np.arange(len(_xz)) * 1/robot.kalman.Camera.rate
+    
+    if hasattr(swarm, 'central_kalman'):
+        for robot in swarm.robots:
+            _xytMHE = np.array(robot.MHE.hist.xk)
+            _xMHE = _xytMHE[0::3]
+            _yMHE = _xytMHE[1::3]
+            _thMHE= _xytMHE[2::3]
+            tMHE  = robot.MHE.hist.Time
+            _xytKAL = np.array(robot.kalman.hist.xk)
+            _xKAL = _xytKAL[0::3]
+            _yKAL = _xytKAL[1::3]
+            _thKAL= _xytKAL[2::3]
+            tKAL  = robot.kalman.hist.Time
+            _xGT  = robot.history.x
+            _yGT  = robot.history.y
+            _thGT = robot.history.yaw
+            tGT   = robot.history.time
+            _xytz = np.array(robot.kalman.hist.xk)
+            _xz   = _xytz[0::3]
+            _yz   = _xytz[1::3]
+            _thz  = _xytz[2::3]
+            tz    = np.arange(len(_xz)) * 1/robot.kalman.Camera.rate
 
-        plt.figure('Trajectory estimation subplots' +  str(robot.indexSwarm))
+            plt.figure('Trajectory estimation subplots' +  str(robot.indexSwarm))
 
-        plt.subplot(3, 1, 1)
-        plt.plot(tGT, _xGT,'-',color = robot.color, label='Ground truth')
-        plt.plot(tMHE, _xMHE,'-.',color = robot.color, label='MHE')
-        plt.plot(tKAL, _xKAL,'--',color = robot.color, label='Kalman')
-        plt.ylabel('x [m]')
-        plt.grid(True)
-        plt.legend()
+            plt.subplot(3, 1, 1)
+            plt.plot(tGT, _xGT,'-',color = robot.color, label='Ground truth')
+            plt.plot(tMHE, _xMHE,'-.',color = robot.color, label='MHE')
+            plt.plot(tKAL, _xKAL,'--',color = robot.color, label='Kalman')
+            plt.ylabel('x [m]')
+            plt.grid(True)
+            plt.legend()
 
-        plt.subplot(3, 1, 2)
-        plt.plot(tGT, _yGT,'-',color = robot.color, label='Ground truth')
-        plt.plot(tMHE, _yMHE,'-.',color = robot.color, label='MHE')
-        plt.plot(tKAL, _yKAL,'--',color = robot.color, label='Kalman')
-        plt.ylabel('y [m]')
-        plt.grid(True)
-        plt.legend()
+            plt.subplot(3, 1, 2)
+            plt.plot(tGT, _yGT,'-',color = robot.color, label='Ground truth')
+            plt.plot(tMHE, _yMHE,'-.',color = robot.color, label='MHE')
+            plt.plot(tKAL, _yKAL,'--',color = robot.color, label='Kalman')
+            plt.ylabel('y [m]')
+            plt.grid(True)
+            plt.legend()
 
-        plt.subplot(3, 1, 3)
-        plt.plot(tGT, _thGT,'-',color = robot.color, label='Ground truth')
-        plt.plot(tMHE, _thMHE,'-.',color = robot.color, label='MHE')
-        plt.plot(tKAL, _thKAL,'--',color = robot.color, label='Kalman')
-        plt.ylabel('$\\theta$ [rad]')
-        plt.xlabel('Time [s]')
-        plt.grid(True)
-        plt.legend()
+            plt.subplot(3, 1, 3)
+            plt.plot(tGT, _thGT,'-',color = robot.color, label='Ground truth')
+            plt.plot(tMHE, _thMHE,'-.',color = robot.color, label='MHE')
+            plt.plot(tKAL, _thKAL,'--',color = robot.color, label='Kalman')
+            plt.ylabel('$\\theta$ [rad]')
+            plt.xlabel('Time [s]')
+            plt.grid(True)
+            plt.legend()
 
-        plt.show()
+            plt.show()
+    else:
+        print('No MHE is initialized, nothing to plot')
 
 
 def ConfrontKalMHE(swarm):
 
-    for robot in swarm.robots:
-        plt.figure('Error in position estimation Kalman vs MHE for robot ' +  str(robot.indexSwarm))
-        diff_xyt = np.array(robot.MHE.hist.Dxk)
-        diff_x = diff_xyt[0::3]
-        diff_y = diff_xyt[1::3]
-        dist = np.sqrt(diff_x**2 + diff_y**2)
-        plt.plot(robot.MHE.hist.Time, dist, "-" , color = robot.color, label='MHE robot'+str(robot.indexSwarm))
-        diff_xyt = np.array(robot.kalman.hist.Dxk)
-        diff_x = diff_xyt[0::3]
-        diff_y = diff_xyt[1::3]
-        dist = np.sqrt(diff_x**2 + diff_y**2)
-        plt.plot(robot.kalman.hist.Time, dist, ":" , color = robot.color, label='Kalman robot'+str(robot.indexSwarm))
-        plt.ylabel('Error in position estimation')
-        plt.xlabel('Time')
-        plt.grid(True)
-        plt.legend()
-        plt.show()
+    if hasattr(swarm, 'central_kalman'):
+        for robot in swarm.robots:
+            plt.figure('Error in position estimation Kalman vs MHE for robot ' +  str(robot.indexSwarm))
+            diff_xyt = np.array(robot.MHE.hist.Dxk)
+            diff_x = diff_xyt[0::3]
+            diff_y = diff_xyt[1::3]
+            dist = np.sqrt(diff_x**2 + diff_y**2)
+            plt.plot(robot.MHE.hist.Time, dist, "-" , color = robot.color, label='MHE robot'+str(robot.indexSwarm))
+            diff_xyt = np.array(robot.kalman.hist.Dxk)
+            diff_x = diff_xyt[0::3]
+            diff_y = diff_xyt[1::3]
+            dist = np.sqrt(diff_x**2 + diff_y**2)
+            plt.plot(robot.kalman.hist.Time, dist, ":" , color = robot.color, label='Kalman robot'+str(robot.indexSwarm))
+            plt.ylabel('Error in position estimation')
+            plt.xlabel('Time')
+            plt.grid(True)
+            plt.legend()
+            plt.show()
+    else:
+        print('No MHE is initialized, nothing to plot')
