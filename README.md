@@ -29,7 +29,7 @@ Launches the simulation with the RVO algorithm, 4 robots in the default plant en
   - collision avoidance algorithm ```rvo``` or ```potential```
 - the highest integer number will be the number of robots
 - to decide which map to launch other then default, modify the planning in ```agv_collision_avoidance.py```
-- arguments specification is not positional
+- arguments specification is **not** positional
 
 
 ## Potential
