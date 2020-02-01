@@ -9,7 +9,7 @@ def get_distance(point_A, point_B):
 
 def force_potential(point_A, point_B, attractive = True):
     
-    distance = abs(get_distance(point_A, point_B) - robot_size)
+    distance = abs(get_distance(point_A, point_B) - 2*robot_size)
     if distance < 1e-1:
         distance = 1e-1
 
@@ -24,7 +24,7 @@ def force_potential(point_A, point_B, attractive = True):
 
 def force_giroscopic(point_A, point_B, velocity_A, velocity_B, clockwise = False):
     
-    distance = abs(get_distance(point_A, point_B) - robot_size)
+    distance = abs(get_distance(point_A, point_B) - 2*robot_size)
     if distance < 1e-1:
         distance = 1e-1
 
@@ -64,13 +64,13 @@ def wall_potential(position, wall, attractive = True):
         k = 1
 
     if projection <= 0:
-        distance = abs(get_distance(position, ra) - robot_size)
+        distance = abs(get_distance(position, ra) - 2*robot_size)
         if distance < 1e-1:
             distance = 1e-1
         return k * (position - ra) / distance**2
 
     elif projection >= wall.length:
-        distance = abs(get_distance(position, rb) - robot_size)
+        distance = abs(get_distance(position, rb) - 2*robot_size)
         if distance < 1e-1:
             distance = 1e-1
         return k * (position - rb) / distance**2
@@ -78,4 +78,4 @@ def wall_potential(position, wall, attractive = True):
     else:
         dist_along = np.linalg.norm(np.cross(np.array(position) - ra, wall.dir))
         perpendicular_vector = position - ra - np.dot(position - ra, wall.dir) * np.array(wall.dir)
-        return k * perpendicular_vector / (dist_along - robot_size)**2
+        return k * perpendicular_vector / (dist_along - 2*robot_size)**2

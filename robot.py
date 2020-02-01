@@ -213,7 +213,7 @@ class Robots:
         # commented to use after the integration, step, according to what are the variables needed
         self.state.xdot = (self.state.v * math.cos(self.state.yaw) + dt * (self.state.vdot * math.cos(self.state.yaw) + F_parallel[0]))
         self.state.ydot = (self.state.v * math.sin(self.state.yaw) + dt * (self.state.vdot * math.sin(self.state.yaw) + F_parallel[1]))
-        self.state.omega = (self.state.v + dt * self.state.vdot)/ L * math.tan(delta) + math.sqrt(np.linalg.norm(F_perpendicular)/(robot_size)) * virtual_torque_sign # + flocking_theta[2]
+        self.state.omega = (self.state.v + dt * self.state.vdot)/ L * math.tan(delta) + math.sqrt(np.linalg.norm(F_perpendicular)*(robot_size)) * virtual_torque_sign # + flocking_theta[2]
         self.state.v = math.sqrt(self.state.xdot**2 + self.state.ydot**2)
 
     def compute_controls(self):
