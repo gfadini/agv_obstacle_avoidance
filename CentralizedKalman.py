@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from simulation_parameters import *
+from utils import *
 import matplotlib.pyplot as plt
 import kalman 
 from scipy.linalg import block_diag
@@ -167,7 +168,7 @@ class centralized_kal():
         self.covariance_prediction()
         meas_flag = ( int(self.kalmanTime/dt) % int( (1/self.swarm.robots[0].kalman.Range.rate)/dt)  == 0 and self.kalmanTime ) != 0
         if meas_flag :
-            print('Centralized measuring')
+            print(BOLD + OKGREEN + 'Centralized Kalman filter collecting measures' + ENDC)
             self.observation_and_measure()
             self.covariance_innovation()
             self.gain()

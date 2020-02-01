@@ -34,28 +34,29 @@ if sys.version_info < (3, 0):
 # initialize the swarm
 swarm = Swarm()
 
-# POLYGON TEST, doesn't need planning
-poly, swarm.robots = polygon(n_robots, radius = 25, n_edges = 100)
-plant, possible_points = Map().from_data(*poly)
-# plant.add_wall([5,5],[-5,-5])
-
-# WITH A MAP, PRELOADED, needs planning
-# plant, possible_points = Map().from_data(*map_2)
-# WITH A MAP, FROM IMAGE, needs planning
-# the map must be in the cwd for the script to work properly
-# plant, possible_points = load_from_image('wall_from_image/plant.png')
+if map_case == 'polygon':
+    # POLYGON TEST, doesn't need planning
+    poly, swarm.robots = polygon(n_robots, radius = 25, n_edges = 100)
+    plant, possible_points = Map().from_data(*poly)
+    # plant.add_wall([5,5],[-5,-5])
+elif map_case == 'plant':
+    # WITH A MAP, PRELOADED, needs planning
+    plant, possible_points = Map().from_data(*map_2)
+    # WITH A MAP, FROM IMAGE, needs planning
+    # the map must be in the cwd for the script to work properly
+    # plant, possible_points = load_from_image('wall_from_image/plant.png')
+    '''
+        PATH PLANNING
+    '''
+    probabilistic_roadmap(swarm, plant, possible_points)
+else:
+    print('Map case not understood')
 
 # save the map in the swarm routine
 swarm.plant = plant
 
 if kalman_centralized:
     swarm.central_kalman = centralized_kal(swarm)
-
-'''
-    PATH PLANNING
-''' 
-# probabilistic_roadmap(swarm, plant, possible_points)
-# swarm.central_kalman = centralized_kal(swarm)
 
 '''
     SIMULATION
@@ -68,6 +69,14 @@ metadata = dict(title='Distributed AGV collision avoidance',
                 artist='Fadini & Piazza',
                 comment='Now on file!')
 writer = FFMpegWriter(fps=int(1/dt), metadata = metadata)
+
+print(HEADER + '*'*23 + '  PARAMETERS SUMMARY  ' + '*'*23 + ENDC)
+print('\tT = {:0.2f}s\n\tN_robots = {:1}\n\tAlgorithm = {:2}\n\tMap = {:3}\n\tCentralized Kalman filter = {:4}\n\tMHE filter = {:5}'.format(
+    T, n_robots, avoidance_algorithm, map_case, str(kalman_centralized), str(kalman_mhe)))
+print(OKGREEN + '*'*22 + ' ALL READY PRESS ENTER  ' + '*'*22 + ENDC)
+
+
+_ = input()
 
 tic()
 timestamp = 0
@@ -110,4 +119,4 @@ plot_kalman_error(swarm)
 plot_MHE_error(swarm)
 plot_filtered_trajectory(swarm)
 plot_filtered_state(swarm)
-ConfrontKalMHE(swarm)
+compare_KalMHE(swarm)

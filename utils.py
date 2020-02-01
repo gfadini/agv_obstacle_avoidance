@@ -48,7 +48,7 @@ def plot_velocity_profile(agent):
 
 def print_informations(time, dt, swarm, interval = 1):
     if int(time/dt) % int(interval/dt) == 0:
-        print(OKBLUE + 30*'-' + ' t = {:0.4} s '.format(time) + 30*'-' + ENDC)
+        print(OKBLUE + 30*'-' + ' t = {:0.2f} s '.format(time) + 30*'-' + ENDC)
         for agent in swarm.robots:
             if agent.state.yaw > math.pi:
                 attitude = agent.state.yaw - 2*math.pi
@@ -56,7 +56,7 @@ def print_informations(time, dt, swarm, interval = 1):
                 attitude = agent.state.yaw + 2*math.pi
             else:
                 attitude = agent.state.yaw
-            print(str(BOLD + "Robot {0:}" + ENDC + " reached: [{1:^.4}, {2:^.4}] with attitude {3:^.4}°, {4:^.4}% route").format(agent.indexSwarm, agent.state.x, agent.state.y,
+            print(str(BOLD + "Robot {0:}" + ENDC + " reached: [{1:^.2f}, {2:^.2f}] with attitude {3:^.1f}°, {4:^.2f}% route").format(agent.indexSwarm, agent.state.x, agent.state.y,
                 attitude*180/math.pi, float(100*agent.nearest_point_index/agent.last_index)))
             if  (int(agent.kalman.kalmanTime/dt) % int((1/agent.kalman.sensors[-1].rate)/dt)) == 0:
                 print(str(BOLD + "Robot {0:}" + ENDC + OKGREEN + ' received new measures' + ENDC).format(agent.indexSwarm))
@@ -98,7 +98,7 @@ def simulation_plot(swarm, time, plot_start_end = True, plot_lidar = False, plot
         plot_arrow(agent.state.x, agent.state.y, agent.state.yaw, agent.color)
         plt.axis("equal")
         plt.grid(True)
-        plt.title('Collision avoidance simulation \n t={:0.4}s'.format(time))
+        plt.title('Collision avoidance simulation \n t={:0.2f}s'.format(time))
 
         plot_cov_ellipse = True
         if plot_cov_ellipse:
@@ -146,7 +146,7 @@ def plot_kalman_error(swarm):
         print('No central kalman is initialized, nothing to plot')
 
 def plot_MHE_error(swarm):
-    if hasattr(swarm, 'central_kalman'):
+    if kalman_mhe:
         plt.figure('MHE error in position estimation')
         for robot in swarm.robots:
             diff_xyt = np.array(robot.MHE.hist.Dxk)
@@ -158,11 +158,11 @@ def plot_MHE_error(swarm):
             plt.xlabel('Time')
             plt.show()
     else:
-        print('No MHE is initialized, nothing to plot')
+        print(FAIL + 'No MHE is initialized, nothing to plot' + ENDC)
 
 def plot_filtered_trajectory(swarm):
     
-    if hasattr(swarm, 'central_kalman'):
+    if kalman_mhe:
         plt.figure('Trajectory estimation')
         for robot in swarm.robots:
             _xytMHE = np.array(robot.MHE.hist.xk)
@@ -183,11 +183,11 @@ def plot_filtered_trajectory(swarm):
             plt.legend()
             plt.show()
     else:
-        print('No MHE is initialized, nothing to plot')
+        print(FAIL + 'No MHE is initialized, nothing to plot' + ENDC)
 
 def plot_filtered_state(swarm):
     
-    if hasattr(swarm, 'central_kalman'):
+    if kalman_mhe:
         for robot in swarm.robots:
             _xytMHE = np.array(robot.MHE.hist.xk)
             _xMHE = _xytMHE[0::3]
@@ -238,12 +238,12 @@ def plot_filtered_state(swarm):
 
             plt.show()
     else:
-        print('No MHE is initialized, nothing to plot')
+        print(FAIL + 'No MHE is initialized, nothing to plot' + ENDC)
 
 
-def ConfrontKalMHE(swarm):
+def compare_KalMHE(swarm):
 
-    if hasattr(swarm, 'central_kalman'):
+    if kalman_mhe:
         for robot in swarm.robots:
             plt.figure('Error in position estimation Kalman vs MHE for robot ' +  str(robot.indexSwarm))
             diff_xyt = np.array(robot.MHE.hist.Dxk)
@@ -262,4 +262,4 @@ def ConfrontKalMHE(swarm):
             plt.legend()
             plt.show()
     else:
-        print('No MHE is initialized, nothing to plot')
+        print(FAIL + 'No MHE is initialized, nothing to plot' + ENDC)

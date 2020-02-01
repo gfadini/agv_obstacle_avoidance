@@ -180,7 +180,7 @@ class Robots:
                 F_giroscopic = F_giroscopic/interacting
             
         if potential:
-            gain = 0.9
+            gain = 0.3
             for i, value in enumerate(swarm.G.adjacency_matrix[self.indexSwarm]):
                 if value == 1:
                     if swarm.robots[i].arrived == 1:
@@ -193,7 +193,7 @@ class Robots:
         F_sum = F_flocking + F_giroscopic + F_potential
 
         if map_potential: # and not interacting == 0
-            gain = 0.5
+            gain = 0.1
             for wall in self.lidar.near_walls:
                 F_wall = wall_potential([self.state.x, self.state.y], wall, attractive = False)
                 F_sum = F_sum + gain * F_wall
@@ -213,7 +213,7 @@ class Robots:
         # commented to use after the integration, step, according to what are the variables needed
         self.state.xdot = (self.state.v * math.cos(self.state.yaw) + dt * (self.state.vdot * math.cos(self.state.yaw) + F_parallel[0]))
         self.state.ydot = (self.state.v * math.sin(self.state.yaw) + dt * (self.state.vdot * math.sin(self.state.yaw) + F_parallel[1]))
-        self.state.omega = (self.state.v + dt * self.state.vdot)/ L * math.tan(delta) + math.sqrt(np.linalg.norm(F_perpendicular)*(robot_size)) * virtual_torque_sign # + flocking_theta[2]
+        self.state.omega = (self.state.v + dt * self.state.vdot)/ L * math.tan(delta) + math.sqrt(np.linalg.norm(F_perpendicular)/(robot_size*2)) * virtual_torque_sign # + flocking_theta[2]
         self.state.v = math.sqrt(self.state.xdot**2 + self.state.ydot**2)
 
     def compute_controls(self):

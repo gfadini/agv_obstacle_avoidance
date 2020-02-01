@@ -27,7 +27,7 @@ T = 60.0  # max simulation time
 
 avoidance_algorithm = 'potential'# 'potential' or 'rvo'
 n_robots = 2
-map_case = 'default' # 'polygon', 'map'
+map_case = 'plant' # 'polygon', 'plant'
 dt = 0.05  # [s]
 time = 0.0
 
@@ -49,7 +49,6 @@ def check_float(x):
 if not cli_parameters is None:
     str_parameters = list(filter(check_string, cli_parameters))
     int_parameters = list(filter(check_int, cli_parameters))
-    print(int_parameters)
 
     # changing the avoidance method
     if 'potential' in str_parameters:
@@ -57,17 +56,20 @@ if not cli_parameters is None:
     elif 'rvo' in str_parameters:
         avoidance_algorithm = 'rvo'
     # changing the map method
-    if 'map' in str_parameters:
-        map_case = 'map'
+    if 'plant' in str_parameters:
+        map_case = 'plant'
     elif 'polygon' in cli_parameters:
         map_case = 'polygon'
+    # kalman modifiers, defaults are False, check next section
+    if 'central' in str_parameters:
+        kalman_centralized = True
+    if 'mhe' in str_parameters:
+        kalman_mhe = True        
 
     try:
         n_robots = int(max(int_parameters))
     except:
-        print('default robot number')
-
-print('T = ', T, 'N_robots = ', n_robots, 'Algorithm = ', avoidance_algorithm, 'Map = ', map_case)
+        print('default robot number: ', n_robots)
 
 '''
     Robot properties
@@ -103,10 +105,14 @@ sigmaCyaw = 5*math.pi/180
 sigmaGPSx = 0.3
 sigmaGPSy = 0.3
 sigmaR    = 0.2
-
-kalman_mhe = False
-kalman_centralized = False
-
+try:
+    kalman_mhe = kalman_mhe
+except:
+    kalman_mhe = False
+try:
+    kalman_centralized = kalman_centralized
+except:
+    kalman_centralized = False
 '''
     Default values for showing the animations and saving the simulations
 '''
