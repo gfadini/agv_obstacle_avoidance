@@ -50,7 +50,7 @@ class kal():
 
     def covariance_prediction(self):
         theta = self.xk[2]
-        A  = np.array([[1, 0, -math.sin(theta) * r_w/2 * (self.u_est_dt[0] + self.u_est_dt[1])], 
+        A  = np.array([[1, 0, -math.sin(theta) * r_w/2 * (self.u_est_dt[0] + self.u_est_dt[1])],
                        [0, 1,  math.cos(theta) * r_w/2 * (self.u_est_dt[0] + self.u_est_dt[1])],
                        [0, 0,                1]]
                      )
@@ -82,8 +82,8 @@ class kal():
         for sensor in self.sensors_measuring_at_T:
             hh = hh + sensor.H.shape[0]
             H = np.append(H , sensor.H.flatten())
-            R = np.append(R , np.diag(sensor.R)) 
-            z = np.append(z , sensor.measure(state)) 
+            R = np.append(R , np.diag(sensor.R))
+            z = np.append(z , sensor.measure(state))
         self.H = H.reshape((hh, 3))
         self.R = np.diag(R)
         self.z = z
@@ -107,7 +107,7 @@ class kal():
     def history_save(self):
         self.hist.xk.extend((self.xk.flatten()).tolist())
         self.hist.Pk.extend((self.Pk.flatten()).tolist())
-        self.hist.Time.extend([self.kalmanTime]) 
+        self.hist.Time.extend([self.kalmanTime])
         state = np.array([self.agent.state.x, self.agent.state.y, self.agent.state.yaw])
         self.hist.Dxk.extend(((self.xk - state).flatten()).tolist())
         self.hist.z.append((self.z).tolist())

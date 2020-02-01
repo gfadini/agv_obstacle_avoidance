@@ -23,7 +23,7 @@ class Enc():
 
 class GPS():
     def __init__(self):
-        self.rate = 2
+        self.rate = 5
         self.H = np.array([[1,0,0],[0,1,0]])
         self.R = np.diag([sigmaGPSx**2,sigmaGPSy**2])
     def measure(self,state):
@@ -39,7 +39,7 @@ class UWB():
 
 class Camera():
     def __init__(self):
-        self.rate = 5
+        self.rate = 2
         self.H = np.diag([1,1,1]) 
         self.R = np.diag([sigmaCx**2,sigmaCy**2,sigmaCyaw**2])
     def measure(self,state):

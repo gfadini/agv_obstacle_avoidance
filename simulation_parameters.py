@@ -17,7 +17,7 @@ MAX_EDGE_LEN = 10.0  # [m] Maximum edge length
 if len(sys.argv) > 1:
     _, *cli_parameters = sys.argv
     print('Overriding default with: ', *cli_parameters)
-else: 
+else:
     cli_parameters = None
 
 '''
@@ -64,7 +64,7 @@ if not cli_parameters is None:
     if 'central' in str_parameters:
         kalman_centralized = True
     if 'mhe' in str_parameters:
-        kalman_mhe = True        
+        kalman_mhe = True
 
     try:
         n_robots = int(max(int_parameters))

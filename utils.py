@@ -161,7 +161,7 @@ def plot_MHE_error(swarm):
         print(FAIL + 'No MHE is initialized, nothing to plot' + ENDC)
 
 def plot_filtered_trajectory(swarm):
-    
+
     if kalman_mhe:
         plt.figure('Trajectory estimation')
         for robot in swarm.robots:
