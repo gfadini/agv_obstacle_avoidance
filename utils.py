@@ -214,7 +214,7 @@ def plot_filtered_state(swarm):
         plt.plot(tKAL, _yKAL,'--',color = robot.color, label='Kalman')
         plt.ylabel('y [m]')
         plt.grid(True)
-        plt.legend()        
+        plt.legend()
 
         plt.subplot(3, 1, 3)
         plt.plot(tGT, _thGT,'-',color = robot.color, label='Ground truth')

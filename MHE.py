@@ -160,7 +160,7 @@ class MHE():
             self.w   += [Xk]
             self.lbw += self.nstates*[-xlim] 
             self.ubw += self.nstates*[+xlim]
-            if self.y_tilde[ k*self.nstates ] != 'nope': 
+            if self.y_tilde[ k*self.nstates ] != 'nope':
                 sIdx = k*self.nstates
                 eIdx = sIdx + self.nstates
                 y_tilde_vec = np.array(self.y_tilde[sIdx:eIdx])
@@ -191,8 +191,8 @@ class MHE():
         u1_opt = w_opt[3::5]
         u2_opt = w_opt[4::5]
 
-        self.state_guess = [x1_opt[1], x2_opt[1], x3_opt[1]] 
-        
+        self.state_guess = [x1_opt[1], x2_opt[1], x3_opt[1]]
+
         self.xkest = [x1_opt[-1], x2_opt[-1], x3_opt[-1]]
     
     def save_hist(self):

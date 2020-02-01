@@ -67,7 +67,7 @@ class kal():
         meas_list = []
         meas_flag = False
         for sensor in self.sensors:
-            if  ( int(self.kalmanTime/dt) % int( (1/sensor.rate)/dt) ) == 0: 
+            if  ( int(self.kalmanTime/dt) % int( (1/sensor.rate)/dt) ) == 0:
                 meas_list.append(sensor)
                 meas_flag = True
                 print('Distributed measuring')
