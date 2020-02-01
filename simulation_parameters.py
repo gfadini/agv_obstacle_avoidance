@@ -21,8 +21,6 @@ if len(sys.argv) > 1:
 else: 
     cli_parameters = None
 
-for i in cli_parameters: print(type(i))
-
 '''
     Simulation properties
 '''
