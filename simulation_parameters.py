@@ -4,6 +4,7 @@
 '''
 import math
 import time as tim
+import sys
 '''
     Probabilistic roadmap 
 '''
@@ -12,18 +13,68 @@ N_KNN = 20  # number of edge from one sampled point
 MAX_EDGE_LEN = 10.0  # [m] Maximum edge length
 
 '''
+    Parsing command line options
+'''
+if len(sys.argv) > 1:
+    _, *cli_parameters = sys.argv
+    print('Overriding default with: ', *cli_parameters)
+else: 
+    cli_parameters = None
+
+for i in cli_parameters: print(type(i))
+
+'''
     Simulation properties
 '''
 T = 60.0  # max simulation time
-avoidance_algorithm = 'potential'#'potential' # 'potential' or 'rvo'
+
+avoidance_algorithm = 'potential'# 'potential' or 'rvo'
+n_robots = 2
+map_case = 'default' # 'polygon', 'map'
 dt = 0.05  # [s]
-# n_arrived = 0
 time = 0.0
+
+
+def check_string(x):
+    return isinstance(x, str)
+def check_bool(x):
+    return isinstance(x, bool)
+def check_int(x):
+    try:
+        int(x)
+    except:
+        return False
+    return int(x) >= 0
+def check_float(x):
+    return isinstance(x, float) and float(x) >= 0
+
+# if the cli parameters are not default, override
+if not cli_parameters is None:
+    str_parameters = list(filter(check_string, cli_parameters))
+    int_parameters = list(filter(check_int, cli_parameters))
+    print(int_parameters)
+
+    # changing the avoidance method
+    if 'potential' in str_parameters:
+        avoidance_algorithm = 'potential'
+    elif 'rvo' in str_parameters:
+        avoidance_algorithm = 'rvo'
+    # changing the map method
+    if 'map' in str_parameters:
+        map_case = 'map'
+    elif 'polygon' in cli_parameters:
+        map_case = 'polygon'
+
+    try:
+        n_robots = int(max(int_parameters))
+    except:
+        print('default robot number')
+
+print('T = ', T, 'N_robots = ', n_robots, 'Algorithm = ', avoidance_algorithm, 'Map = ', map_case)
 
 '''
     Robot properties
 '''
-n_robots = 2
 robot_size = 2.0  # [m]
 reference_speed = 10.0 # [m/s]
 k = 0.1  # look forward gain
