@@ -105,8 +105,8 @@ sigmaGPSx = 0.3
 sigmaGPSy = 0.3
 sigmaR    = 0.2
 
-kalman_mhe = True
-kalman_centralized = True
+kalman_mhe = False
+kalman_centralized = False
 
 '''
     Default values for showing the animations and saving the simulations

@@ -126,8 +126,7 @@ class Robots:
         self.V_ref = np.array([0,0])
         self.kalman = kal(self)
         if kalman_mhe:
-            self.MHE = MHE(self) ###
-        
+            self.MHE = MHE(self)
         self.docking = False
     
     def update(self, delta):

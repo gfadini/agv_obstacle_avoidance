@@ -10,7 +10,6 @@ import scipy.spatial
 import random
 import math
 import cv2
-
 from CentralizedKalman  import centralized_kal###
 
 class Node:

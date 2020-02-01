@@ -36,7 +36,6 @@ swarm = Swarm()
 
 # POLYGON TEST, doesn't need planning
 poly, swarm.robots = polygon(n_robots, radius = 25, n_edges = 100)
-swarm.central_kalman = centralized_kal(swarm) ###
 plant, possible_points = Map().from_data(*poly)
 # plant.add_wall([5,5],[-5,-5])
 
