@@ -46,7 +46,7 @@ class centralized_kal():
             else:
                 full_covariance = block_diag(full_covariance, agent.kalman.Pk)
         self.PK = full_covariance # np.diag(full_covariance)
-        self.XK = full_states + self.PK @ np.random.randn(3*len(swarm.robots)) 
+        self.XK = full_states + (self.PK**(1/2)) @ np.random.randn(3*len(swarm.robots)) 
         
         self.hist = kal_hist(self.XK,self.PK,full_states )
 

@@ -23,7 +23,7 @@ else:
 '''
     Simulation properties
 '''
-T = 60.0  # max simulation time
+T = 5.0  # max simulation time
 
 avoidance_algorithm = 'potential'# 'potential' or 'rvo'
 n_robots = 2

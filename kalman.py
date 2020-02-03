@@ -67,7 +67,7 @@ class kal():
         meas_list = []
         meas_flag = False
         for sensor in self.sensors:
-            if  (int(self.kalmanTime/dt) % int((1/sensor.rate)/dt)) == 0:
+            if  (int(self.kalmanTime/dt) % int((1/sensor.rate)/dt)) == 0 and self.kalmanTime != 0:
                 meas_list.append(sensor)
                 meas_flag = True
         self.sensors_measuring_at_T = meas_list

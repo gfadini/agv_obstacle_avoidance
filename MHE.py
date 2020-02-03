@@ -75,7 +75,7 @@ class MHE():
         self.ubg = []
 
         # Define Horizon
-        self.Horizon = 16 # measures
+        self.Horizon = 6 # measures
         self.enoughMeasure = False
         
         # Define vector of control estimated measurements
@@ -86,7 +86,7 @@ class MHE():
 
         self.KalX = self.agent.kalman.xk.tolist()
         self.KalP = ( self.agent.kalman.Pk.flatten() ).tolist()
-        self.state_guess = []
+        self.state_guess = self.xkest
 
     def measurement_acquisition(self):
         if self.enoughMeasure:
@@ -102,11 +102,11 @@ class MHE():
             else:
                 self.y_tilde.extend( [ 'nope' , 'nope', 'nope'] )
         else:
-            self.u_tilde.extend(( self.agent.kalman.u_est_dt/dt ).tolist())
+            self.u_tilde.extend(( self.agent.kalman.u_est_dt/dt ).tolist()) 
             self.KalX.extend( self.agent.kalman.xk.tolist())
-            self.KalP.extend( ( self.agent.kalman.Pk.flatten() ).tolist())
-            self.state_guess =  self.KalX[:self.nstates]
+            self.KalP.extend( ( self.agent.kalman.Pk.flatten()).tolist())
             if self.agent.kalman.is_measuring():
+                self.state_guess =  ( self.agent.kalman.z ).tolist() 
                 self.y_tilde.extend(( self.agent.kalman.z ).tolist())
             else:
                 self.y_tilde.extend([ 'nope' , 'nope', 'nope'])
@@ -131,7 +131,7 @@ class MHE():
         self.lbw += self.nstates*[-xlim]
         self.ubw += self.nstates*[+xlim] 
 
-        xkal = np.array(self.KalX[:self.nstates])
+        xkal = np.array(self.KalX[self.nstates:(2*self.nstates)])
         Pkal = np.linalg.inv((np.array(self.KalP[:(self.nstates**2)]).reshape((self.nstates,self.nstates))))
         self.J += ( xkal - Xk).T @ Pkal @ (xkal - Xk)
 
@@ -206,5 +206,7 @@ class MHE():
         self.measurement_acquisition()
         if self.enoughMeasure:
             self.BuildMinimizationProblem()
+        else:
+            self.xkest = self.KalX[:self.nstates]
         self.save_hist()
         self.MHETime += dt

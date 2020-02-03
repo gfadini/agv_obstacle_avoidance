@@ -104,13 +104,13 @@ def simulation_plot(swarm, time, plot_start_end = True, plot_lidar = False, plot
         if plot_cov_ellipse:
             agent.kalman.ellipse_plot()
         
-    plt.xlim(min(swarm.plant.ox), max(swarm.plant.ox))        
+    plt.xlim(min(swarm.plant.ox), max(swarm.plant.ox))
     plt.ylim(min(swarm.plant.oy), max(swarm.plant.oy))
 
 
 def plot_kalman_error(swarm):
 
-    plt.figure('Kalman error in position estimation')
+    plt.figure('Kalman error in postion estimation [m]')
     for robot in swarm.robots:
         # diff_x = robot.kalman.hist.Dxk[0::3]
         # diff_y = robot.kalman.hist.Dxk[1::3]
@@ -119,8 +119,8 @@ def plot_kalman_error(swarm):
         diff_y = diff_xyt[1::3]
         dist = np.sqrt(diff_x**2 + diff_y**2)
         plt.plot(robot.kalman.hist.Time, dist, "-" , color = robot.color, label='Position error robot'+str(robot.indexSwarm))
-        plt.ylabel('Error in position estimation')
-        plt.xlabel('Time')
+        plt.ylabel('Error in postion estimation [m]')
+        plt.xlabel('Time [s]')
         plt.grid(True)
         plt.legend()
         plt.show()
@@ -136,8 +136,8 @@ def plot_kalman_error(swarm):
             diff_x = np.array(swarm.central_kalman.hist.Dxk[mx::n])
             diff_y = np.array(swarm.central_kalman.hist.Dxk[my::n])
             dist = np.sqrt(diff_x**2 + diff_y**2)
-            plt.ylabel('Error in x direction - Centralized Kalman')
-            plt.xlabel('Time')
+            plt.ylabel('Error in x direction - Centralized Kalman [m]')
+            plt.xlabel('Time [s]')
             plt.plot(swarm.central_kalman.hist.Time, dist, "-" , color = robot.color, label='Position error robot'+str(robot.indexSwarm))
         plt.grid(True)
         plt.legend()
@@ -147,15 +147,15 @@ def plot_kalman_error(swarm):
 
 def plot_MHE_error(swarm):
     if kalman_mhe:
-        plt.figure('MHE error in position estimation')
+        plt.figure('MHE error in postion estimation [m]')
         for robot in swarm.robots:
             diff_xyt = np.array(robot.MHE.hist.Dxk)
             diff_x = diff_xyt[0::3]
             diff_y = diff_xyt[1::3]
             dist = np.sqrt(diff_x**2 + diff_y**2)
             plt.plot(robot.MHE.hist.Time, dist, "-" , color = robot.color, label='Position error robot'+str(robot.indexSwarm))
-            plt.ylabel('Error in position estimation')
-            plt.xlabel('Time')
+            plt.ylabel('Error in postion estimation [m]')
+            plt.xlabel('Time [s]')
             plt.show()
     else:
         print(FAIL + 'No MHE is initialized, nothing to plot' + ENDC)
@@ -256,10 +256,70 @@ def compare_KalMHE(swarm):
             diff_y = diff_xyt[1::3]
             dist = np.sqrt(diff_x**2 + diff_y**2)
             plt.plot(robot.kalman.hist.Time, dist, ":" , color = robot.color, label='Kalman robot'+str(robot.indexSwarm))
-            plt.ylabel('Error in position estimation')
-            plt.xlabel('Time')
+            plt.ylabel('Error in postion estimation [m]')
+            plt.xlabel('Time [s]')
             plt.grid(True)
             plt.legend()
             plt.show()
     else:
         print(FAIL + 'No MHE is initialized, nothing to plot' + ENDC)
+
+def print_RMSE(swarm):
+    print(OKBLUE + '*'*29 + '   BENCHMARK  ' + '*'*29 + ENDC)
+    n = 3*n_robots
+    for i, robot in enumerate(swarm.robots):
+
+        diff_xytKAL = np.array( robot.kalman.hist.Dxk)
+        diff_xKAL = diff_xytKAL[0::3]
+        diff_yKAL = diff_xytKAL[1::3]
+        diff_tKAL = diff_xytKAL[2::3]
+
+        if kalman_mhe:
+            diff_xytMHE = np.array( robot.MHE.hist.Dxk)
+            diff_xMHE = diff_xytMHE[0::3]
+            diff_yMHE = diff_xytMHE[1::3]
+            diff_tMHE = diff_xytMHE[2::3]
+
+        mx = i*3
+        my = mx + 1
+        mt = mx + 2
+        if kalman_centralized:
+            diff_xKALC = np.array(swarm.central_kalman.hist.Dxk[mx::n])
+            diff_yKALC = np.array(swarm.central_kalman.hist.Dxk[my::n])
+            diff_tKALC = np.array(swarm.central_kalman.hist.Dxk[mt::n])
+
+        RMSE_xKAL = math.sqrt(np.sum(diff_xKAL**2)/len(diff_xKAL))
+        RMSE_yKAL = math.sqrt(np.sum(diff_yKAL**2)/len(diff_yKAL))
+        RMSE_tKAL = math.sqrt(np.sum(diff_tKAL**2)/len(diff_tKAL))
+        
+        if kalman_centralized:
+            RMSE_xKALC = math.sqrt(np.sum(diff_xKALC**2)/len(diff_xKALC))
+            RMSE_yKALC = math.sqrt(np.sum(diff_yKALC**2)/len(diff_yKALC))
+            RMSE_tKALC = math.sqrt(np.sum(diff_tKALC**2)/len(diff_tKALC))
+        if kalman_mhe:
+            RMSE_xMHE  = math.sqrt(np.sum(diff_xMHE**2)/len(diff_xMHE))
+            RMSE_yMHE  = math.sqrt(np.sum(diff_yMHE**2)/len(diff_yMHE))
+            RMSE_tMHE  = math.sqrt(np.sum(diff_tMHE**2)/len(diff_tMHE))
+
+        print(BOLD + 'Robot ' + str(robot.indexSwarm) + ENDC + ' RMSE VALUES:')
+        print('\tDISTRIBUTED KALMAN x: {:0.2f} m'.format(RMSE_xKAL))
+        if kalman_centralized:
+            print('\tCENTRALISED KALMAN x: {:0.2f} m'.format(RMSE_xKALC))
+        if kalman_mhe:
+            print('\t               MHE x: {:0.2f} m'.format(RMSE_xMHE))
+        print('\tDISTRIBUTED KALMAN y: {:0.2f} m'.format(RMSE_yKAL))
+        if kalman_centralized:
+            print('\tCENTRALISED KALMAN y: {:0.2f} m'.format(RMSE_yKALC))
+        if kalman_mhe:
+            print('\t               MHE y: {:0.2f} m'.format(RMSE_yMHE))
+        print('\tDISTRIBUTED KALMAN t: {:0.2f}'.format(RMSE_tKAL))
+        if kalman_centralized:
+            print('\tCENTRALISED KALMAN t: {:0.2f}'.format(RMSE_tKALC))
+        if kalman_mhe:
+            print('\t               MHE t: {:0.2f}'.format(RMSE_tMHE))
+
+        if not kalman_centralized:
+            print(WARNING + 'Warning Centralized Kalman wasn\'t initialized, skipping\n' + ENDC)
+        if not kalman_mhe:
+            print(WARNING + 'Warning MHE wasn\'t initialized, skipping\n' + ENDC)
+        print('_'*72)
