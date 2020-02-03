@@ -312,7 +312,7 @@ def print_RMSE(swarm):
             print('\tCENTRALISED KALMAN y: {:0.2f} m'.format(RMSE_yKALC))
         if kalman_mhe:
             print('\t               MHE y: {:0.2f} m'.format(RMSE_yMHE))
-        print('\tDISTRIBUTED KALMAN t: {:0.2f} θ'.format(RMSE_tKAL))
+        print('\tDISTRIBUTED KALMAN θ: {:0.2f} rad'.format(RMSE_tKAL))
         if kalman_centralized:
             print('\tCENTRALISED KALMAN θ: {:0.2f} rad'.format(RMSE_tKALC))
         if kalman_mhe:
