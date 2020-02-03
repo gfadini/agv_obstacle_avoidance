@@ -180,7 +180,7 @@ class Robots:
                 F_giroscopic = F_giroscopic/interacting
             
         if potential:
-            gain = 0.3
+            gain = 0.9
             for i, value in enumerate(swarm.G.adjacency_matrix[self.indexSwarm]):
                 if value == 1:
                     if swarm.robots[i].arrived == 1:
@@ -193,7 +193,7 @@ class Robots:
         F_sum = F_flocking + F_giroscopic + F_potential
 
         if map_potential: # and not interacting == 0
-            gain = 0.1
+            gain = 0.3
             for wall in self.lidar.near_walls:
                 F_wall = wall_potential([self.state.x, self.state.y], wall, attractive = False)
                 F_sum = F_sum + gain * F_wall
