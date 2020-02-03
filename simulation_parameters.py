@@ -23,9 +23,9 @@ else:
 '''
     Simulation properties
 '''
-T = 5.0  # max simulation time
+T = 65.0  # max simulation time
 
-avoidance_algorithm = 'potential'# 'potential' or 'rvo'
+avoidance_algorithm = 'potential' # 'potential' or 'rvo'
 n_robots = 2
 map_case = 'plant' # 'polygon', 'plant'
 dt = 0.05  # [s]
