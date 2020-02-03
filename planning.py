@@ -288,6 +288,8 @@ def polygon(n_robots = n_robots, radius = 50, n_edges = 8, origin = [0, 0]):
         swarm.append(agent)
 
         agent.kalman = kal(agent)
+        if kalman_mhe:
+            agent.MHE = MHE(agent)
         
 
     poly = [
@@ -428,6 +430,8 @@ def probabilistic_roadmap(swarm, plant, possible_points):
             swarm.robots.append(agent)
             
             agent.kalman = kal(agent)
+            if kalman_mhe:
+                agent.MHE = MHE(agent)
 
             if show_animation_roadmap:
                 plt.plot(rx, ry, "-r") 
