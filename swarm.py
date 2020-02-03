@@ -86,7 +86,7 @@ class Swarm():
                 
             elif sum([agents.arrived for agents in self.robots]) == n_robots:
                 toc()
-                print('All robots arrived at their goal')
+                print(OKGREEN + 'All robots arrived at their goal' + ENDC)
                 self.all_arrived = True
                 return # exits the main cycle
 

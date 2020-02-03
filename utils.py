@@ -143,7 +143,7 @@ def plot_kalman_error(swarm):
         plt.legend()
         plt.show()
     else:
-        print('No central kalman is initialized, nothing to plot')
+        print(FAIL + 'No central kalman is initialized, nothing to plot' + ENDC)
 
 def plot_MHE_error(swarm):
     if kalman_mhe:
@@ -319,7 +319,7 @@ def print_RMSE(swarm):
             print('\t               MHE θ: {:0.2f} rad'.format(RMSE_tMHE))
 
         if not kalman_centralized:
-            print(WARNING + 'Warning Centralized Kalman wasn\'t initialized, skipping\n' + ENDC)
+            print(WARNING + 'Warning Centralized Kalman wasn\'t initialized, skipping' + ENDC)
         if not kalman_mhe:
-            print(WARNING + 'Warning MHE wasn\'t initialized, skipping\n' + ENDC)
+            print(WARNING + 'Warning MHE wasn\'t initialized, skipping' + ENDC)
         print('_'*72)

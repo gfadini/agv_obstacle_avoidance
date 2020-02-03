@@ -41,7 +41,7 @@ if map_case == 'polygon':
     # plant.add_wall([5,5],[-5,-5])
 elif map_case == 'plant':
     # WITH A MAP, PRELOADED, needs planning
-    plant, possible_points = Map().from_data(*map_2)
+    plant, possible_points = Map().from_data(*map_3)
     # WITH A MAP, FROM IMAGE, needs planning
     # the map must be in the cwd for the script to work properly
     # plant, possible_points = load_from_image('wall_from_image/plant.png')
