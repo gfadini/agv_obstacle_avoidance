@@ -50,6 +50,6 @@ Launches the simulation with the RVO algorithm, 4 robots in the default plant en
 
 ![](Animation/simulation_3_rvo_02-04_08-44.gif)
 
-![](Animation\simulation_8_rvo_02-04_16-01.gif)
+![](Animation/simulation_8_rvo_02-04_16-01.gif)
 
 
