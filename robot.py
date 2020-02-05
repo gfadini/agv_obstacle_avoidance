@@ -178,7 +178,7 @@ class Robots:
         F_sum = F_giroscopic + F_potential
 
         if map_potential:
-            gain = 0.3
+            gain = 0.9
             for wall in self.lidar.near_walls:
                 F_wall = wall_potential([self.state.x, self.state.y], wall, attractive = False)
                 F_sum = F_sum + gain * F_wall

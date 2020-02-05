@@ -63,16 +63,16 @@ def wall_potential(position, wall, attractive = True):
     else:
         k = 1
 
-    if projection <= 0:
+    if projection < 0:
         distance = abs(get_distance(position, ra) - 2*robot_size)
-        if distance < 1e-1:
-            distance = 1e-1
+        if distance < 1e-2:
+            distance = 1e-2
         return k * (position - ra) / distance**2
 
-    elif projection >= wall.length:
+    elif projection > wall.length:
         distance = abs(get_distance(position, rb) - 2*robot_size)
-        if distance < 1e-1:
-            distance = 1e-1
+        if distance < 1e-2:
+            distance = 1e-2
         return k * (position - rb) / distance**2
 
     else:

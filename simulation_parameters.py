@@ -12,24 +12,15 @@ N_KNN = 20  # number of edge from one sampled point
 MAX_EDGE_LEN = 10.0  # [m] Maximum edge length
 
 '''
-    Parsing command line options
-'''
-if len(sys.argv) > 1:
-    _, *cli_parameters = sys.argv
-    print('Overriding default with: ', *cli_parameters)
-else:
-    cli_parameters = None
-
-'''
     Simulation properties
 '''
-T = 30.0  # max simulation time
+T = 60.0  # max simulation time
 
 avoidance_algorithm = 'potential' # 'potential' or 'rvo'
 n_robots = 2
 map_case = 'plant' # 'polygon', 'plant'
-dt = 0.05  # [s]
-time = 0.0
+dt = 0.05  # [s] simulation integration time step
+time = 0.0 # initial time of the simulation
 
 
 def check_string(x):
@@ -44,6 +35,15 @@ def check_int(x):
     return int(x) >= 0
 def check_float(x):
     return isinstance(x, float) and float(x) >= 0
+
+'''
+    Parsing command line options
+'''
+if len(sys.argv) > 1:
+    _, *cli_parameters = sys.argv
+    print('Overriding default with: ', *cli_parameters)
+else:
+    cli_parameters = None
 
 # if the cli parameters are not default, override
 if not cli_parameters is None:
@@ -76,6 +76,9 @@ if not cli_parameters is None:
 '''
 robot_size = 2.0  # [m]
 reference_speed = 10.0/3.6 # [m/s]
+L = 2.0  # [m] wheel base of vehicle
+r_w = 0.15 # wheel radius
+# line following parameters
 k = 0.1  # look forward gain
 if avoidance_algorithm == 'rvo':
     safety_distance = 6 # [m]
@@ -83,12 +86,11 @@ if avoidance_algorithm == 'rvo':
 elif avoidance_algorithm == 'potential':
     safety_distance = 4.0 # [m] from walls for the PRM
     Lfc = 1.0  # look-ahead distance
+# PID
 Kp = 1.0  # speed proportional gain
 Kd = 0.001
 Ki = 0.1
 k_omega = 1.0   # angular velocity proportional gain
-L = 2.0  # [m] wheel base of vehicle
-r_w = 0.15 # wheel radius
 
 '''
     Kalman filter and MHE properties

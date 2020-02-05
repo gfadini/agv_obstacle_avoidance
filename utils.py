@@ -144,8 +144,6 @@ def plot_kalman_error(swarm):
         for i, robot in enumerate(swarm.robots):
             mx = i*3
             my = mx + 1
-            # diff_x = swarm.central_kalman.hist.Dxk[mx::n]
-            # diff_y = swarm.central_kalman.hist.Dxk[my::n]
             diff_x = np.array(swarm.central_kalman.hist.Dxk[mx::n])
             diff_y = np.array(swarm.central_kalman.hist.Dxk[my::n])
             dist = np.sqrt(diff_x**2 + diff_y**2)
