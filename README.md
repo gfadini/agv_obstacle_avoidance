@@ -35,21 +35,20 @@ Launches the simulation with the RVO algorithm, 4 robots in the default plant en
 ## Potential
 Collision avooidance with 3 robot encountering in the centre
 ![](Animation/simulation_3_potential_02-04_13-17.gif)
-Collision avooidance with 3 robot encountering in the centre with a corridor
+Collision avooidance with 2 robot encountering in the centre with a corridor
 ![](Animation/simulation_2_potential_02-04_15-25.gif)
-Collision avooidance with 8 robot ina simple map
+Collision avooidance with 8 robot in a simple map
 ![](Animation/simulation_8_potential_02-04_15-39.gif)
 
 ## RVO
-
-![](Animation/simulation_2_rvo_02-04_10-00.gif)
-
+Collision avooidance with 2 robot encountering in the centre with a corridor
 ![](Animation/simulation_2_rvo_02-04_09-52.gif)
-
+Collision avooidance with 3 robot encountering in the centre
 ![](Animation/simulation_3_rvo_02-04_08-33.gif)
+Collision avooidance with 8 robot in a simple map
+![](Animation/simulation_8_rvo_02-04_16-01.gif)
 
-![](Animation/simulation_3_rvo_02-04_08-44.gif)
 
-[//]: <>  ![](Animation/simulation_8_rvo_02-04_16-01.gif)
-
+![](NOPE\Animation/simulation_3_rvo_02-04_08-44.gif)
+![](NOPE\Animation/simulation_2_rvo_02-04_10-00.gif)
 
