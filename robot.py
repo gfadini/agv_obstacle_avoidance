@@ -115,7 +115,7 @@ class Robots:
         self.target_index = None
         self.history = Log()
         self.L = L
-        self.target_speed = reference_speed / 3.6 # [km/h]
+        self.target_speed = reference_speed # [m/s]
         self.arrived = False
         self.color = random_color()
         self.lidar = lidar(self)
@@ -177,7 +177,7 @@ class Robots:
                                                     clockwise = False)
                         interacting = interacting + 1
             if not interacting == 0:
-                F_giroscopic = F_giroscopic/interacting
+                F_giroscopic = F_giroscopic / interacting
             
         if potential:
             gain = 0.9
@@ -192,7 +192,7 @@ class Robots:
 
         F_sum = F_flocking + F_giroscopic + F_potential
 
-        if map_potential: # and not interacting == 0
+        if map_potential:
             gain = 0.3
             for wall in self.lidar.near_walls:
                 F_wall = wall_potential([self.state.x, self.state.y], wall, attractive = False)
@@ -211,10 +211,15 @@ class Robots:
         virtual_torque_sign = np.sign(np.cross(vehicle_direction, F_perpendicular))
 
         # commented to use after the integration, step, according to what are the variables needed
-        self.state.xdot = (self.state.v * math.cos(self.state.yaw) + dt * (self.state.vdot * math.cos(self.state.yaw) + F_parallel[0]))
-        self.state.ydot = (self.state.v * math.sin(self.state.yaw) + dt * (self.state.vdot * math.sin(self.state.yaw) + F_parallel[1]))
-        self.state.omega = (self.state.v + dt * self.state.vdot)/ L * math.tan(delta) + math.sqrt(np.linalg.norm(F_perpendicular)/(robot_size*2)) * virtual_torque_sign # + flocking_theta[2]
-        self.state.v = math.sqrt(self.state.xdot**2 + self.state.ydot**2)
+        virtual_xdot = (self.state.v * math.cos(self.state.yaw) + dt * (self.state.vdot * math.cos(self.state.yaw) + F_parallel[0]))
+        virtual_ydot = (self.state.v * math.sin(self.state.yaw) + dt * (self.state.vdot * math.sin(self.state.yaw) + F_parallel[1]))
+        self.state.omega = (self.state.v + dt * self.state.vdot)/ L * math.tan(delta) + \
+            math.sqrt(np.linalg.norm(F_perpendicular)/(robot_size*2)) * virtual_torque_sign
+        virtual_v = math.sqrt(virtual_xdot**2 + virtual_ydot**2)
+        if virtual_v <= 1.2 * self.target_speed:
+            self.state.v = virtual_v
+        else:
+            self.state.v = 1.2 * self.target_speed
 
     def compute_controls(self):
         self.state.u =  np.array([(2 * self.state.v + self.L * self.state.omega)/(2*r_w),
@@ -225,7 +230,7 @@ class Robots:
         psi = self.state.yaw
         beta = math.asin(math.sin(theta2 - psi))
         w = (beta)
-        v = (np.linalg.norm(self.V_ref) - self.state.v)
+        v = (np.linalg.norm(self.V_ref))
         tmp = np.array([v,w])
         # A = np.array([[L,L],[1,-1]]) * r_w/(2*L)
         # Ainv = np.linalg.inv(A)
@@ -252,6 +257,7 @@ class Robots:
         self.state.ydot = self.state.v * math.sin(self.state.yaw)
         self.state.omega = np.array([r_w/(2*L),-r_w/(2*L)]).T @ control
 
+        self.state.v = np.array([r_w/(2),+r_w/(2)]).T @ control
         # if self.state.yaw > math.pi:
         #     self.state.yaw = self.state.yaw - 2*math.pi
         # elif self.state.yaw <  - math.pi:
@@ -376,7 +382,7 @@ class Robots:
                 RVO_BA_all.append(RVO_BA)        
         for wallpt in self.lidar.lit_points:        
             pB = np.array(wallpt)
-            transl_vB_vA = pA + 0.5*(vA) ###dubbio
+            transl_vB_vA = pA + 0.5*(vA)
             BA_vec = pB - pA
             dist_BA = np.linalg.norm(BA_vec)
             theta_BA = math.atan2(BA_vec[1], BA_vec[0])
@@ -400,7 +406,9 @@ class Robots:
         self.V_ref = V_opt #V_des
 
 def PIDControl(agent):
-    agent.state.vdot = Kp * (agent.target_speed - agent.state.v) + Kd * (agent.history.v[-1] - agent.state.v) / dt + Ki * (agent.integral_error + dt * (agent.target_speed - agent.state.v))
+    agent.state.vdot = Kp * (agent.target_speed - agent.state.v) +\
+                       Kd * (agent.history.v[-1] - agent.state.v) / dt +\
+                       Ki * (agent.integral_error + dt * (agent.target_speed - agent.state.v))
 
 def pure_pursuit_control(agent, rx, ry, pind):
 
@@ -446,8 +454,7 @@ def intersect(pA, vA, RVO_BA_all):
         return vA 
 
     for theta in np.arange(0, 2*math.pi, 0.1):
-        # for rad in np.arange(0.02, norm_v+0.02, norm_v/5.0):
-        for rad in np.arange(0, norm_v, norm_v/10.0):
+        for rad in np.arange(0, 1.2*norm_v, norm_v/10.0):
             new_v = np.array([rad*math.cos(theta), rad*math.sin(theta)])
             suit = True
             for RVO_BA in RVO_BA_all:

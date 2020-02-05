@@ -37,7 +37,7 @@ def plot_arrow(x, y, yaw, fc = 'r', length=0.1, width=2.0, ec="k"):
 def plot_velocity_profile(agent):
     plt.figure('Velocity profile')
     plt.cla()
-    plt.title("Speed [km/h]")
+    plt.title("Velocity profile")
     plt.plot(agent.history.time, [iv * 3.6 for iv in agent.history.v], color = agent.color)
     plt.xlabel("Time[s]")
     plt.ylabel("Speed[km/h]")
@@ -63,6 +63,19 @@ def print_informations(time, dt, swarm, interval = 1):
         if swarm.possible_collision:
             print(WARNING + 'Possible collision detected' + ENDC)
 
+def print_performance(swarm):
+    print(OKBLUE + '*'*29 + '  PERFORMANCE  ' + '*'*29 + ENDC)
+    mean_velocity = 0
+    std_velocity = 0
+    for i, robot in enumerate(swarm.robots):
+        mean_velocity = np.mean(robot.history.v) + mean_velocity
+        std_velocity = np.std(robot.history.v)
+    mean_velocity = mean_velocity/(i+1)
+    std_velocity = std_velocity/(i+1)
+    print('Swarm mean speed is {:0.2f} m/s, reference speed was {:0.2f} m/s'.format(mean_velocity, reference_speed))
+    print('Swarm mean standard deviation on the speed is {:0.2f} m/s'.format(std_velocity))
+    print('_'*72)
+    
 def tic(): 
     #Homemade version of matlab tic and toc functions 
     import time 

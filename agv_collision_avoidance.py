@@ -70,10 +70,10 @@ metadata = dict(title='Distributed AGV collision avoidance',
                 comment='Now on file!')
 writer = FFMpegWriter(fps=int(1/dt), metadata = metadata)
 
-print(HEADER + '*'*23 + '  PARAMETERS SUMMARY  ' + '*'*23 + ENDC)
+print(HEADER + '*'*25 + '  PARAMETERS SUMMARY  ' + '*'*25 + ENDC)
 print('\tT = {:0.2f}s\n\tN_robots = {:1}\n\tAlgorithm = {:2}\n\tMap = {:3}\n\tCentralized Kalman filter = {:4}\n\tMHE filter = {:5}'.format(
     T, n_robots, avoidance_algorithm, map_case, str(kalman_centralized), str(kalman_mhe)))
-print(OKGREEN + '*'*22 + ' ALL READY PRESS ENTER  ' + '*'*22 + ENDC)
+print(OKGREEN + '*'*24 + ' ALL READY PRESS ENTER  ' + '*'*24 + ENDC)
 
 
 _ = input()
@@ -85,7 +85,7 @@ time = 0.0
 plt.figure('Simulation')
 plt.interactive(True)
 
-print(HEADER + '*'*22 + '  STARTING SIMULATION  ' + '*'*22 + ENDC)
+print(HEADER + '*'*24 + '  STARTING SIMULATION  ' + '*'*24 + ENDC)
 
 with writer.saving(plt.figure('Simulation'), video_name, writer_dpi):
     while time <= T and not swarm.all_arrived:
@@ -115,6 +115,7 @@ with writer.saving(plt.figure('Simulation'), video_name, writer_dpi):
 '''
     POSTPROCESSING
 '''
+print_performance(swarm)
 plot_kalman_error(swarm)
 plot_MHE_error(swarm)
 plot_filtered_trajectory(swarm)

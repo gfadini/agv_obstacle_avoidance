@@ -23,7 +23,7 @@ else:
 '''
     Simulation properties
 '''
-T = 65.0  # max simulation time
+T = 30.0  # max simulation time
 
 avoidance_algorithm = 'potential' # 'potential' or 'rvo'
 n_robots = 2
@@ -75,7 +75,7 @@ if not cli_parameters is None:
     Robot properties
 '''
 robot_size = 2.0  # [m]
-reference_speed = 10.0 # [m/s]
+reference_speed = 10.0/3.6 # [m/s]
 k = 0.1  # look forward gain
 if avoidance_algorithm == 'rvo':
     safety_distance = 6 # [m]
@@ -84,8 +84,8 @@ elif avoidance_algorithm == 'potential':
     safety_distance = 4.0 # [m] from walls for the PRM
     Lfc = 1.0  # look-ahead distance
 Kp = 1.0  # speed proportional gain
-Kd = 0.01
-Ki = 1
+Kd = 0.001
+Ki = 0.1
 k_omega = 1.0   # angular velocity proportional gain
 L = 2.0  # [m] wheel base of vehicle
 r_w = 0.15 # wheel radius

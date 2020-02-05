@@ -291,7 +291,6 @@ def polygon(n_robots = n_robots, radius = 50, n_edges = 8, origin = [0, 0]):
         if kalman_mhe:
             agent.MHE = MHE(agent)
         
-
     poly = [
                 list(points_A),
                 list(points_B),

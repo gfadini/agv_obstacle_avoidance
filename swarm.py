@@ -58,7 +58,7 @@ class Swarm():
                 
                 # STOPPING CONDITION
                 if agent.target_index == len(agent.path.x) - 1 and agent.target_speed > 0:
-                    agent.target_speed = max(agent.target_speed - 0.3 * dt, 0)
+                    agent.target_speed = max(agent.target_speed - 0.35 * dt, 0)
                 
                 if avoidance_algorithm == 'rvo':
                     agent.lidar.scan(self.plant)
@@ -74,7 +74,10 @@ class Swarm():
                     agent.lidar.scan(self.plant)
                     PIDControl(agent)
                     delta = pure_pursuit_control(agent, agent.path.x, agent.path.y, agent.target_index)
-                    agent.update_derivatives(self, delta, flocking = False, giroscopic = True, potential = True, map_potential = True)
+                    if map_case == 'polygon':
+                        agent.update_derivatives(self, delta, flocking = False, giroscopic = True, potential = True, map_potential = False)
+                    else:
+                        agent.update_derivatives(self, delta, flocking = False, giroscopic = True, potential = True, map_potential = True)
                     # agent.update(delta)
                     agent.compute_controls()
                     agent.update_diff_kine()
