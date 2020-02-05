@@ -75,7 +75,7 @@ def print_performance(swarm):
     print('Swarm mean speed is {:0.2f} m/s, reference speed was {:0.2f} m/s'.format(mean_velocity, reference_speed))
     print('Swarm mean standard deviation on the speed is {:0.2f} m/s'.format(std_velocity))
     print('_'*72)
-    
+
 def tic(): 
     #Homemade version of matlab tic and toc functions 
     import time 
@@ -159,7 +159,7 @@ def plot_kalman_error(swarm):
         print(FAIL + 'No central kalman is initialized, nothing to plot' + ENDC)
 
 def plot_MHE_error(swarm):
-    if kalman_mhe:
+    if mhe_filter:
         plt.figure('MHE error in postion estimation [m]')
         for robot in swarm.robots:
             diff_xyt = np.array(robot.MHE.hist.Dxk)
@@ -175,7 +175,7 @@ def plot_MHE_error(swarm):
 
 def plot_filtered_trajectory(swarm):
 
-    if kalman_mhe:
+    if mhe_filter:
         plt.figure('Trajectory estimation')
         for robot in swarm.robots:
             _xytMHE = np.array(robot.MHE.hist.xk)
@@ -200,7 +200,7 @@ def plot_filtered_trajectory(swarm):
 
 def plot_filtered_state(swarm):
     
-    if kalman_mhe:
+    if mhe_filter:
         for robot in swarm.robots:
             _xytMHE = np.array(robot.MHE.hist.xk)
             _xMHE = _xytMHE[0::3]
@@ -256,7 +256,7 @@ def plot_filtered_state(swarm):
 
 def compare_KalMHE(swarm):
 
-    if kalman_mhe:
+    if mhe_filter:
         for robot in swarm.robots:
             plt.figure('Error in position estimation Kalman vs MHE for robot ' +  str(robot.indexSwarm))
             diff_xyt = np.array(robot.MHE.hist.Dxk)
@@ -287,7 +287,7 @@ def print_RMSE(swarm):
         diff_yKAL = diff_xytKAL[1::3]
         diff_tKAL = diff_xytKAL[2::3]
 
-        if kalman_mhe:
+        if mhe_filter:
             diff_xytMHE = np.array( robot.MHE.hist.Dxk)
             diff_xMHE = diff_xytMHE[0::3]
             diff_yMHE = diff_xytMHE[1::3]
@@ -309,7 +309,7 @@ def print_RMSE(swarm):
             RMSE_xKALC = math.sqrt(np.sum(diff_xKALC**2)/len(diff_xKALC))
             RMSE_yKALC = math.sqrt(np.sum(diff_yKALC**2)/len(diff_yKALC))
             RMSE_tKALC = math.sqrt(np.sum(diff_tKALC**2)/len(diff_tKALC))
-        if kalman_mhe:
+        if mhe_filter:
             RMSE_xMHE  = math.sqrt(np.sum(diff_xMHE**2)/len(diff_xMHE))
             RMSE_yMHE  = math.sqrt(np.sum(diff_yMHE**2)/len(diff_yMHE))
             RMSE_tMHE  = math.sqrt(np.sum(diff_tMHE**2)/len(diff_tMHE))
@@ -318,21 +318,21 @@ def print_RMSE(swarm):
         print('\tDISTRIBUTED KALMAN x: {:0.2f} m'.format(RMSE_xKAL))
         if kalman_centralized:
             print('\tCENTRALISED KALMAN x: {:0.2f} m'.format(RMSE_xKALC))
-        if kalman_mhe:
+        if mhe_filter:
             print('\t               MHE x: {:0.2f} m'.format(RMSE_xMHE))
         print('\tDISTRIBUTED KALMAN y: {:0.2f} m'.format(RMSE_yKAL))
         if kalman_centralized:
             print('\tCENTRALISED KALMAN y: {:0.2f} m'.format(RMSE_yKALC))
-        if kalman_mhe:
+        if mhe_filter:
             print('\t               MHE y: {:0.2f} m'.format(RMSE_yMHE))
         print('\tDISTRIBUTED KALMAN θ: {:0.2f} rad'.format(RMSE_tKAL))
         if kalman_centralized:
             print('\tCENTRALISED KALMAN θ: {:0.2f} rad'.format(RMSE_tKALC))
-        if kalman_mhe:
+        if mhe_filter:
             print('\t               MHE θ: {:0.2f} rad'.format(RMSE_tMHE))
 
         if not kalman_centralized:
             print(WARNING + 'Warning Centralized Kalman wasn\'t initialized, skipping' + ENDC)
-        if not kalman_mhe:
+        if not mhe_filter:
             print(WARNING + 'Warning MHE wasn\'t initialized, skipping' + ENDC)
         print('_'*72)

@@ -64,7 +64,7 @@ if not cli_parameters is None:
     if 'central' in str_parameters:
         kalman_centralized = True
     if 'mhe' in str_parameters:
-        kalman_mhe = True
+        mhe_filter = True
 
     try:
         n_robots = int(max(int_parameters))
@@ -91,7 +91,7 @@ L = 2.0  # [m] wheel base of vehicle
 r_w = 0.15 # wheel radius
 
 '''
-    Kalman properties
+    Kalman filter and MHE properties
 '''
 sigmaX0 = 3
 sigmaY0 = 3
@@ -106,11 +106,11 @@ sigmaGPSx = 0.3
 sigmaGPSy = 0.3
 sigmaR    = 0.2
 try:
-    kalman_mhe = kalman_mhe
+    mhe_filter = mhe_filter # see if the mhe_filter is initialized by cl
 except:
-    kalman_mhe = False
+    mhe_filter = False
 try:
-    kalman_centralized = kalman_centralized
+    kalman_centralized = kalman_centralized # see if the mhe_filter is initialized by cl
 except:
     kalman_centralized = False
 '''

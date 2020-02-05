@@ -125,7 +125,7 @@ class Robots:
         self.integral_error = 0
         self.V_ref = np.array([0,0])
         self.kalman = kal(self)
-        if kalman_mhe:
+        if mhe_filter:
             self.MHE = MHE(self)
         self.docking = False
     
@@ -143,22 +143,7 @@ class Robots:
         self.compute_controls()
 
     def update_derivatives(self, swarm, delta, flocking = False, giroscopic = True, potential = False, map_potential = True):
-        # interacting = list(int(not agent.arrived) for agent in swarm)
-        # selection_matrix = np.matrix(list(interacting for _ in swarm))
-        # print(interacting, selection_matrix)
-        X = np.matrix(list(agent.state.x for agent in swarm.robots))
-        Y = np.matrix(list(agent.state.y for agent in swarm.robots))
-        Theta = np.matrix(list(agent.state.yaw for agent in swarm.robots))
-        if flocking:
-            flocking_x = np.sum(G.laplacian_matrix[self.indexSwarm] * X.T)
-            flocking_y = np.sum(G.laplacian_matrix[self.indexSwarm] * Y.T)
-            flocking_theta = np.sum(G.laplacian_matrix[self.indexSwarm] * Theta.T)
-        else:
-            flocking_x = 0
-            flocking_y = 0
-            flocking_theta = 0
-
-        F_flocking = np.array([flocking_x, flocking_y])
+        
         F_potential = np.zeros(2)
         F_giroscopic = np.zeros(2)
         
@@ -190,7 +175,7 @@ class Robots:
                                                                 [swarm.robots[i].state.x, swarm.robots[i].state.y],
                                                                 attractive = False)
 
-        F_sum = F_flocking + F_giroscopic + F_potential
+        F_sum = F_giroscopic + F_potential
 
         if map_potential:
             gain = 0.3
@@ -200,7 +185,7 @@ class Robots:
         
         F_sum_magnitude = np.linalg.norm(F_sum)
         saturation = 25
-        # print('F_sum_magnitude ', F_sum_magnitude)
+
         if F_sum_magnitude > saturation:
             F_sum = F_sum * saturation / F_sum_magnitude
         
@@ -232,8 +217,6 @@ class Robots:
         w = (beta)
         v = (np.linalg.norm(self.V_ref))
         tmp = np.array([v,w])
-        # A = np.array([[L,L],[1,-1]]) * r_w/(2*L)
-        # Ainv = np.linalg.inv(A)
         Ainv = np.array([[1/r_w,L/r_w],[1/r_w,-L/r_w]])
         thetas_dot = Ainv @ tmp # theta_ddot
         self.state.u =  thetas_dot
@@ -258,10 +241,6 @@ class Robots:
         self.state.omega = np.array([r_w/(2*L),-r_w/(2*L)]).T @ control
 
         self.state.v = np.array([r_w/(2),+r_w/(2)]).T @ control
-        # if self.state.yaw > math.pi:
-        #     self.state.yaw = self.state.yaw - 2*math.pi
-        # elif self.state.yaw <  - math.pi:
-        #     self.state.yaw = self.state.yaw + 2*math.pi
   
     def save_history(self, time):
         self.history.x.append(self.state.x)
@@ -315,7 +294,7 @@ class Robots:
                 minT = np.min((T_coll1_new,T_coll2_new))
                 maxT = np.max((T_coll1_new,T_coll2_new))
             if (maxT > 0) and ((minT)*self.state.v < self.lidar.range):
-                #print("Colllision will probably occour in {0:.4}".format(np.min((T_coll1,T_coll2)) )) 
+                
                 if (minT < np.min((T_coll1,T_coll2))) :
                     T_coll1 = T_coll1_new 
                     T_coll2 = T_coll2_new 
@@ -353,14 +332,13 @@ class Robots:
         self.V_ref = V_des
 
     def RVO_update(self, swarm, G): # X,V_des, V_current, ws_model
-        ROB_RAD = robot_size ###
+        ROB_RAD = robot_size
         robdirA = np.array([math.cos(self.state.yaw),math.sin(self.state.yaw)])
         vA = self.state.v*robdirA
         pA = np.array([self.state.x,self.state.y])
 
         RVO_BA_all = []
         for _i , item in enumerate(G[self.indexSwarm,]):
-        #for j in range(len(X)):
             if item == 1:
                 robdirB = np.array([math.cos(swarm[_i].state.yaw),math.sin(swarm[_i].state.yaw)])
                 vB = swarm[_i].state.v * robdirB
@@ -388,7 +366,7 @@ class Robots:
             theta_BA = math.atan2(BA_vec[1], BA_vec[0])
             # over-approximation of square to circular
             OVER_APPROX_C2S = 1.5
-            rad = 0#ROB_RAD*OVER_APPROX_C2S
+            rad = 0 # ROB_RAD*OVER_APPROX_C2S
             if (rad+ROB_RAD) > dist_BA:
                 dist_BA = rad+ROB_RAD
             theta_BAort = math.asin((rad+ROB_RAD)/dist_BA)
@@ -430,8 +408,6 @@ def pure_pursuit_control(agent, rx, ry, pind):
     return delta
 
 def intersect(pA, vA, RVO_BA_all):
-    # print '----------------------------------------'
-    # print 'Start intersection test'
     norm_v = np.linalg.norm(vA)
     suitable_V = []
     unsuitable_V = []
@@ -480,7 +456,7 @@ def intersect(pA, vA, RVO_BA_all):
         unsuitable_V.append(new_v)
     #----------------------        
     if suitable_V:
-        # print 'Suitable found'
+        # Suitable found
         vA_post = min(suitable_V, key = lambda v: np.linalg.norm(v - vA))
         new_v = vA_post[:]
         for RVO_BA in RVO_BA_all:
@@ -492,7 +468,7 @@ def intersect(pA, vA, RVO_BA_all):
             theta_right = math.atan2(right[1], right[0])
             theta_left = math.atan2(left[1], left[0])
     else:
-        # print 'Suitable not found'
+        # Suitable not found
         tc_V = dict()
         for unsuit_v in unsuitable_V:
             tc_V[tuple(unsuit_v)] = 0

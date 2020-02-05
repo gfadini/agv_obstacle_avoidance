@@ -72,7 +72,7 @@ writer = FFMpegWriter(fps=int(1/dt), metadata = metadata)
 
 print(HEADER + '*'*25 + '  PARAMETERS SUMMARY  ' + '*'*25 + ENDC)
 print('\tT = {:0.2f}s\n\tN_robots = {:1}\n\tAlgorithm = {:2}\n\tMap = {:3}\n\tCentralized Kalman filter = {:4}\n\tMHE filter = {:5}'.format(
-    T, n_robots, avoidance_algorithm, map_case, str(kalman_centralized), str(kalman_mhe)))
+    T, n_robots, avoidance_algorithm, map_case, str(kalman_centralized), str(mhe_filter)))
 print(OKGREEN + '*'*24 + ' ALL READY PRESS ENTER  ' + '*'*24 + ENDC)
 
 
