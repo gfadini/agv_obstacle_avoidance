@@ -11,12 +11,14 @@ Dependencies:
 - terminalplot
 - casadi
 - ffmpeg
+- latex interpreter
 ```
 To check the dependencies, in UNIX system it's possible to use ```install_python_dependencies.sh```.
-In any case, the scripts are also proven to be working under Windows systems.
+In any case, the scripts are also proven to be working under Windows systems. In particular under Windows if ffmpeg was not installed in ```'C:\\ffmpeg\\bin\\ffmpeg.exe'```, modify the ```plt.rcParams['animation.ffmpeg_path']``` accordingly in ```agv_collision_avoidance.py```
 
-All the simulation parameters of the main simulation ```agv_collision_avoidance.py``` are modifiable from ```simulation_parameters```.
-However, through command line arguments, some of them are settable or can be toggled as follows:
+All the simulation parameters of interest of the main simulation ```agv_collision_avoidance.py``` are modifiable from another script ```simulation_parameters.py```.
+
+However, through command line arguments, some of them are more easily settable or can be toggled as follows:
 
 **Example**
 ```python agv_collision_avoidance.py 'rvo' 'mhe' 'central' 4 'plant'```
@@ -35,6 +37,8 @@ Launches the simulation with the RVO algorithm, 4 robots in the default plant en
 ## Potential
 
 ![](Animation/simulation_3_potential_02-04_13-17.gif)
+
+![](Animation/simulation_5_potential.gif)
 
 ![](Animation/simulation_2_potential_02-04_15-25.gif)
 
